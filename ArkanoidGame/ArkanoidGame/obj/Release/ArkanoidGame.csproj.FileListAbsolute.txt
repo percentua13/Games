@@ -6,3 +6,4 @@ C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Release\ArkanoidGame.P
 C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Release\ArkanoidGame.csproj.GenerateResource.cache
 C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Release\ArkanoidGame.exe
 C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Release\ArkanoidGame.pdb
+C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Release\ArkanoidGame.csprojAssemblyReference.cache

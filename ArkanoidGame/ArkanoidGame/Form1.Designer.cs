@@ -34,9 +34,6 @@
             this.Clock = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
-            // Clock
-            // 
-            // 
             // ArkanoidForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -46,7 +43,7 @@
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ArkanoidForm";
-            this.Text = "Infinity Arcanoid";
+            this.Text = "Infinity Arkanoid";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
             this.ResumeLayout(false);
 
