@@ -1,22 +1,40 @@
-﻿using System;
+﻿using ArkanoidGame.Interfaces;
+using System;
 using System.Drawing;
+
+
 namespace ArkanoidGame
 {
-    class Coordinates
-    {
-        public int X_1 { set; get; }
-        public int X_Size { set; get; } = 33;
-        public int Y_1 { set; get; }
-        public int Y_Size { set; get; } = 17;
-    }
     class Platform
     {
+        class Coordinates : ICoordinates
+        {
+            #region fields
+            public int X_1 { set; private get; }
+            public int X_Size { set; private get; } = 33;
+            public int Y_1 { set; private get; }
+            public int Y_Size { set; private get; } = 17;
+            #endregion
+
+            public void Deconstruct(out int X_1, out int Y_1, out int X_Size, out int Y_Size)
+            {
+                #region
+                X_1 = this.X_1;
+                Y_1 = this.Y_1;
+                X_Size = this.X_Size;
+                Y_Size = this.Y_Size;
+                #endregion
+            }
+        }
+
+        #region fields
         public const int CountOfPlatforms = 9;
         public Image PlatformImage { get; } = new Bitmap(@"Pictures\platforms.png");
-        private Coordinates[] PlatformCoordinates;
-
+        private readonly ICoordinates[] PlatformCoordinates;
+        #endregion
         public Platform()
         {
+            #region
             PlatformCoordinates = new Coordinates[CountOfPlatforms];
             PlatformCoordinates[0] = new Coordinates() { X_1 = 0, Y_1 = 0};
             PlatformCoordinates[1] = new Coordinates() { X_1 = 0, Y_1 = 20};
@@ -29,16 +47,19 @@ namespace ArkanoidGame
             PlatformCoordinates[6] = new Coordinates() { X_1 = 72, Y_1 = 0};
             PlatformCoordinates[7] = new Coordinates() { X_1 = 72, Y_1 = 20};
             PlatformCoordinates[8] = new Coordinates() { X_1 = 72, Y_1 = 40};
+            #endregion
         }
                     
-        public Coordinates this[int i]
+        public ICoordinates this[int i]
         {
-            get 
+            #region
+            get
             {
                 if (i < 0 || i >= CountOfPlatforms) throw new IndexOutOfRangeException();
 
                 return PlatformCoordinates[i];
             }
+            #endregion
         }
     }
 }

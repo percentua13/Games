@@ -1,208 +1,254 @@
-﻿using System;
+﻿using ArkanoidGame.Interfaces;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+
 namespace ArkanoidGame
 {
-    class Map
+    public class Map : IMap
     {
-        int KoefToAddLine = 1;
-        Ball GameBall = null;
-        internal const int mapWidth = 20;
-        internal const int mapHeight = 30;
-        internal const int PixelSize = 20;
+        #region fields
+        //Determines how much score needs to be (KoefToAddLine*COUNT_OF_BROKEN_PLATFORMS_TO_ADD_LINES) to add new line;
+        private int m_KoefToAddLine = 1;
 
-        private int[,] map = null;
+        private IBall m_GameBall;
 
-        private Platform ArkanoidPlatform;
+        internal const int m_MapWidth = 20;
+        internal const int m_MapHeight = 30;
+        internal const int m_PixelSize = 20;
 
-        private Set ArkanoidSet;
+        private int[,] m_Map;
 
+        private Platform m_ArkanoidPlatform;
+
+        private Set m_ArkanoidSet;
+        #endregion
+        
        public Map()
        {
-            map = new int[mapHeight + 2, mapWidth + 2];
+            #region
+            m_Map = new int[m_MapHeight + 2, m_MapWidth + 2];
 
-            GameBall = new Ball();
+            m_GameBall = new Ball();
 
-            ArkanoidSet = new Set();
+            m_ArkanoidSet = new Set();
 
-            ArkanoidPlatform = new Platform();
-        }
+            m_ArkanoidPlatform = new Platform();
+            #endregion
+       }
 
+        //Clear the game field
         private void ClearGame()
         {
-            for (int i = 0; i < mapHeight; ++i)
+            #region
+            for (int i = 0; i < m_MapHeight; ++i)
             {
-                for (int j = 0; j < mapWidth; ++j)
+                for (int j = 0; j < m_MapWidth; ++j)
                 {
-                    map[i, j] = 0;
+                    m_Map[i, j] = 0;
                 }
             }
+            #endregion
         }
 
-        internal void SetInitProperities()
+        //Set initial properties to start the game
+        public void SetInitialProperities()
         {
-            GameBall.MaxPlatformY = mapHeight / 4;
+            #region
 
-            ArkanoidSet.iSetX = (mapWidth-3) / 2;
-            ArkanoidSet.iSetY = mapHeight - 1;
+            m_KoefToAddLine = 1;
+
+            //Initial count of lines 
+            m_GameBall.m_MaxPlatformY = m_GameBall.m_MaxPlatformY;//m_MapHeight / 4;
+
+            //Initial Coordinates of Set - (center - bottom of map) 
+            m_ArkanoidSet.m_iSetX = (m_MapWidth-3) / 2;
+            m_ArkanoidSet.m_iSetY = m_MapHeight - 1;
 
             ClearGame();
             GeneratePlatforms();
 
-            GameBall.SetInitProperities(ArkanoidSet);
+            m_GameBall.SetInitProperities(m_ArkanoidSet);
 
-            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX] = (int)DefinedNumbersForGame.SET1;
-            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 1] = (int)DefinedNumbersForGame.SET2;
-            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 2] = (int)DefinedNumbersForGame.SET3;
-            map[GameBall.iBallY, GameBall.iBallX] = (int)DefinedNumbersForGame.BALL;
-
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX] = (int)ENUM_DefinedNumbersForGame.SET1;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 1] = (int)ENUM_DefinedNumbersForGame.SET2;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 2] = (int)ENUM_DefinedNumbersForGame.SET3;
+            m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX] = (int)ENUM_DefinedNumbersForGame.BALL;
+            #endregion
         }
 
+        //Choose random color for each platform
         private void GeneratePlatforms()
         {
+            #region
             Random rand = new Random();
 
-            for (int i = 0; i < GameBall?.MaxPlatformY; ++i)
+            for (int i = 0; i < m_GameBall?.m_MaxPlatformY; ++i)
             {
-                for (int j = 0; j < mapWidth; j += 2)
+                for (int j = 0; j < m_MapWidth; j += 2)
                 {
-                    
-                    int index = rand.Next(1, 9);
-                    map[i, j] = index;
-                    map[i, j + 1] = index * 10;
+                    int index = rand.Next(1, Platform.CountOfPlatforms);
+                    m_Map[i, j] = index;
+                    m_Map[i, j + 1] = index * 10;
                 }
             }
+            #endregion
         }
 
-        internal bool AddLine(ref int Score)
+        //Add new line whether is there free space
+        private bool AddLine()
         {
+            #region
             //New Game
-            if (GameBall.MaxPlatformY + 1 >= mapHeight - 1) return false;
+            if (m_GameBall.m_MaxPlatformY + 1 >= m_MapHeight - 1) return false;
 
 
-            for (int i = GameBall.MaxPlatformY; i > 0; --i)
+            for (int i = m_GameBall.m_MaxPlatformY; i > 0; --i)
             {
-                for (int j = 0; j < mapWidth; j += 2)
+                for (int j = 0; j < m_MapWidth; j += 2)
                 {
-                    if (map[i - 1, j] != (int)DefinedNumbersForGame.BALL && map[i, j] != (int)DefinedNumbersForGame.BALL)
-                        map[i, j] = map[i - 1, j];
+                    if (m_Map[i - 1, j] != (int)ENUM_DefinedNumbersForGame.BALL && m_Map[i, j] != (int)ENUM_DefinedNumbersForGame.BALL)
+                        m_Map[i, j] = m_Map[i - 1, j];
                 }
             }
 
             Random rand = new Random();
-            for (int j = 0; j < mapWidth; j += 2)
+            for (int j = 0; j < m_MapWidth; j += 2)
             {
-                if (map[0, j] != (int)DefinedNumbersForGame.BALL && map[0, j + 1] != (int)DefinedNumbersForGame.BALL)
+                if (m_Map[0, j] != (int)ENUM_DefinedNumbersForGame.BALL && m_Map[0, j + 1] != (int)ENUM_DefinedNumbersForGame.BALL)
                 {
-                    map[0, j] = rand.Next(1, Platform.CountOfPlatforms);
-                    map[0, j + 1] = map[0, j]*10;
+                    m_Map[0, j] = rand.Next(1, Platform.CountOfPlatforms);
+                    m_Map[0, j + 1] = m_Map[0, j]*10;
                 }
             }
 
-            ++GameBall.MaxPlatformY;
+            ++m_GameBall.m_MaxPlatformY;
 
             return true;
+            #endregion
         }
 
-        public void DrawMap(Graphics g, Game game)
+        public void DrawMap(Graphics g)
         {
-            for (int i = 0; i < mapHeight; ++i)
+            #region
+            for (int i = 0; i < m_MapHeight; ++i)
             {
-                for (int j = 0; j < mapWidth; ++j)
+                for (int j = 0; j < m_MapWidth; ++j)
                 {
-                    if (map[i, j] == (int)DefinedNumbersForGame.SET1)
+                    if (m_Map[i, j] == (int)ENUM_DefinedNumbersForGame.SET1)
                     {
-                        g.DrawImage(ArkanoidSet.SetImage, new Rectangle(new Point((int)DefinedNumbersForGame.LEFT_MARGIN + j * PixelSize, i * PixelSize), new Size(60, 20)), 0, 0, 64, 16, GraphicsUnit.Pixel);
+                        g.DrawImage(m_ArkanoidSet.SetImage, new Rectangle(new Point((int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + j * m_PixelSize, i * m_PixelSize), new Size(60, 20)), 0, 0, 64, 16, GraphicsUnit.Pixel);
                     }
 
-                    switch (map[i, j])
+                    switch (m_Map[i, j])
                     {
-                        case (int)DefinedNumbersForGame.SET1:
-                            g.DrawImage(ArkanoidSet.SetImage, new Rectangle(new Point((int)DefinedNumbersForGame.LEFT_MARGIN + j * PixelSize, i * PixelSize), new Size(60, 20)), 0, 0, 64, 16, GraphicsUnit.Pixel);
+                        //If set
+                        case (int)ENUM_DefinedNumbersForGame.SET1:
+                            g.DrawImage(m_ArkanoidSet.SetImage, new Rectangle(new Point((int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + j * m_PixelSize, i * m_PixelSize), new Size(60, 20)), 0, 0, 64, 16, GraphicsUnit.Pixel);
                             break;
 
-                        case (int)DefinedNumbersForGame.BALL:
-                            g.DrawImage(GameBall.ArkanoidBall, new Rectangle(new Point((int)DefinedNumbersForGame.LEFT_MARGIN + j * PixelSize, i * PixelSize), new Size(20, 20)), 0, 0, 20, 20, GraphicsUnit.Pixel);
+                        //If ball
+                        case (int)ENUM_DefinedNumbersForGame.BALL:
+                            g.DrawImage(m_GameBall.m_ArkanoidBall, new Rectangle(new Point((int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + j * m_PixelSize, i * m_PixelSize), new Size(20, 20)), 0, 0, 20, 20, GraphicsUnit.Pixel);
                             break;
 
+                        //If space
                         case 0:
                             break;
 
+                        //If platform
                         default:
-                            int index = map[i, j]-1;
+                            int index = m_Map[i, j]-1;
 
-                            if (index < Platform.CountOfPlatforms) 
-                                 g.DrawImage(ArkanoidPlatform.PlatformImage, new Rectangle(new Point((int)DefinedNumbersForGame.LEFT_MARGIN + j * PixelSize, i * PixelSize), new Size(40, 20)), ArkanoidPlatform[index].X_1, ArkanoidPlatform[index].Y_1, ArkanoidPlatform[index].X_Size, ArkanoidPlatform[index].Y_Size, GraphicsUnit.Pixel);
-                           
+                            if (index < Platform.CountOfPlatforms)
+                            {
+                                (int X_1, int Y_1, int X_Size, int Y_Size) = m_ArkanoidPlatform[index];
+                                g.DrawImage(m_ArkanoidPlatform.PlatformImage, new Rectangle(new Point((int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + j * m_PixelSize, i * m_PixelSize), new Size(40, 20)), X_1, Y_1, X_Size, Y_Size, GraphicsUnit.Pixel);
+                            }
                             break;
-
                     }
                 }
-            }       
+            }
+            #endregion
         }
 
-        internal bool IsCollide(ref int Score)
+
+        /* 
+         * Determines if there is an obstacle  : Walls, Platform, Set
+         * If true : Walls and Platform => Change directory
+         *         : Platform => Crash platform and change directory
+         */
+        private bool IsCollide(ref int Score)
         {
+            #region
 
             bool IsCollide = false;
 
-            //WALL
-            if (GameBall.iBallX + GameBall.iDirectionX  > mapWidth - 1 || GameBall.iBallX + GameBall.iDirectionX  < 0)
+            #region WALLS
+            //COLLISION WITH WALL
+            //Check left and right borders
+            if (m_GameBall.m_iBallX + m_GameBall.m_iDirectionX  > m_MapWidth - 1 || m_GameBall.m_iBallX + m_GameBall.m_iDirectionX  < 0)
             {
-                GameBall.iDirectionX *= -1;
+                m_GameBall.m_iDirectionX *= -1;
                 IsCollide = true;
             }
 
-            //WALL
-            if (GameBall.iBallY + GameBall.iDirectionY >= mapHeight || GameBall.iBallY + GameBall.iDirectionY < 0)
+            //COLLISION WITH WALL
+            //Check upper and lower borders
+            if (m_GameBall.m_iBallY + m_GameBall.m_iDirectionY >= m_MapHeight || m_GameBall.m_iBallY + m_GameBall.m_iDirectionY < 0)
             {
-                GameBall.iDirectionY *= -1;
+                m_GameBall.m_iDirectionY *= -1;
                 IsCollide = true;
             }
+            #endregion
 
-            //SET
-            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] >= (int)DefinedNumbersForGame.SET1)
+            #region SET
+            //COLLISION WITH SET
+            //Check if set under the ball
+            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] >= (int)ENUM_DefinedNumbersForGame.SET1)
             {
-                GameBall.iDirectionY *= -1;
-                IsCollide = true;
-
-                return IsCollide;
-            }
-
-            //SET
-            if (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] >= (int)DefinedNumbersForGame.SET1)
-            {
-                GameBall.iDirectionX *= -1;
+                m_GameBall.m_iDirectionY *= -1;
                 IsCollide = true;
 
                 return IsCollide;
             }
 
-            //SET
-            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] >= (int)DefinedNumbersForGame.SET1)
+            //COLLISION WITH SET
+            //Check if set is diagonal to the ball
+            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] >= (int)ENUM_DefinedNumbersForGame.SET1)
             {
-                GameBall.iDirectionX *= -1;
-                GameBall.iDirectionY *= -1;
+                m_GameBall.m_iDirectionX *= -1;
+                m_GameBall.m_iDirectionY *= -1;
                 IsCollide = true;
 
                return IsCollide;
             }
-            //BLOCK
-            if (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] < (int)DefinedNumbersForGame.SET1 && map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] != 0)
-            {
-                map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] = (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
+            #endregion
 
-                if (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] < 10)
+            #region PLATFORMS
+            //COLLISION WITH PLATFORM
+            //If ball doesn't cross out the borders => check for collision with platforms
+            if (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] < (int)ENUM_DefinedNumbersForGame.SET1 && m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] != (int)ENUM_DefinedNumbersForGame.EMPTY_BLOCK)
+            {          
+                //if touch to begin of platform => delete end of platform
+                if (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] < (int)ENUM_DefinedNumbersForGame.BLOCK1_MAX)
                 {
-                    map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX + 1] = (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX + 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
+                    //if ball on this part => leave ball else => free space
+                    m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] = (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
                 }
+                //if touch to end of platform => delete begin of platform
                 else
                 {
-                    map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX - 1] = (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX - 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
+                    //if ball on this part => leave ball else => free space
+                    m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] = (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
                 }
 
-                GameBall.iDirectionX *= -1;
+                //delete platform : if ball on this part => leave ball else => free space
+                m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] = (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+
+                //Change direction
+                m_GameBall.m_iDirectionX *= -1;
 
                 ++Score;
 
@@ -211,22 +257,30 @@ namespace ArkanoidGame
                 return IsCollide;
             }
 
-            //BLOCK
-            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] < (int)DefinedNumbersForGame.SET1 && map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] != 0)
+            //COLLISION WITH PLATFORM
+            //If ball doesn't cross out the borders => check for collision with platforms
+            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] < (int)ENUM_DefinedNumbersForGame.SET1 && m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] != (int)ENUM_DefinedNumbersForGame.EMPTY_BLOCK)
             {
-                map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
-
-                if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] < 10)
+               
+                //if touch to begin of platform => delete end of platform
+                if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] < (int)ENUM_DefinedNumbersForGame.BLOCK1_MAX)
                 {
-                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
+                    //if ball on this part => leave ball else => free space
+                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
 
                 }
+                //if touch to end of platform => delete begin of platform
                 else
                 {
-                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX - 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX - 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
+                    //if ball on this part => leave ball else => free space
+                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX - 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX - 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
                 }
 
-                GameBall.iDirectionY *= -1;
+                //delete platform : if ball on this part => leave ball else => free space
+                m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+
+                //Change direction
+                m_GameBall.m_iDirectionY *= -1;
 
                 ++Score;
 
@@ -235,96 +289,120 @@ namespace ArkanoidGame
                 return IsCollide;
             }
 
-            //BLOCK
-            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] < (int)DefinedNumbersForGame.SET1 && map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] != 0)
+            //COLLISION WITH PLATFORM
+            //If ball doesn't cross out the borders => check for collision with platforms
+            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] < (int)ENUM_DefinedNumbersForGame.SET1 && m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] != (int)ENUM_DefinedNumbersForGame.EMPTY_BLOCK)
             {
-
-                map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
-
-                if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] < 10)
+                //if touch to begin of platform => delete end of platform
+                if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] < (int)ENUM_DefinedNumbersForGame.BLOCK1_MAX)
                 {
-                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX + 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX + 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
+                    //if ball on this part => leave ball else => free space
+                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
                 }
+                //if touch to end of platform => delete begin of platform
                 else
                 {
-                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX - 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX - 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
+                    //if ball on this part => leave ball else => free space
+                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
                 }
 
-                GameBall.iDirectionX *= -1;
-                GameBall.iDirectionY *= -1;
+
+                //delete platform : if ball on this part => leave ball else => free space
+                m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+
+
+                //Change direction
+                m_GameBall.m_iDirectionX *= -1;
+                m_GameBall.m_iDirectionY *= -1;
 
                 ++Score;
                 IsCollide = true;
 
                 return IsCollide;
             }
-
+            #endregion
 
             return IsCollide;
-
+#endregion
         }
 
-        internal void InputCheck(object sender, KeyEventArgs e)
+
+        // Button click processing
+        public void KeyInputCheck(object sender, KeyEventArgs e)
         {
+            #region
             if (e.KeyCode != Keys.Left && e.KeyCode != Keys.Right) return;
 
             //Set has length = 3 points
-            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX] = 0;
-            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 1] = 0;
-            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 2] = 0;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX] = 0;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 1] = 0;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 2] = 0;
 
             switch (e.KeyCode)
             {
                 case Keys.Right:
-                    if (ArkanoidSet.iSetX + 3 < mapWidth)
-                        ++ArkanoidSet.iSetX;
+                    if (m_ArkanoidSet.m_iSetX + 3 < m_MapWidth)
+                        ++m_ArkanoidSet.m_iSetX;
                     break;
 
                 case Keys.Left:
-                    if (ArkanoidSet.iSetX - 1 >= 0)
-                        --ArkanoidSet.iSetX;
+                    if (m_ArkanoidSet.m_iSetX - 1 >= 0)
+                        --m_ArkanoidSet.m_iSetX;
                     break;
             }
 
-            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX] = (int)DefinedNumbersForGame.SET1;
-            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 1] = (int)DefinedNumbersForGame.SET2;
-            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 2] = (int)DefinedNumbersForGame.SET3;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX] = (int)ENUM_DefinedNumbersForGame.SET1;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 1] = (int)ENUM_DefinedNumbersForGame.SET2;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 2] = (int)ENUM_DefinedNumbersForGame.SET3;
+            #endregion
         }
 
-        internal void update(object sender, EventArgs e, Game game)
+
+        //Update info when ball moves
+        public bool IfMapCanBeApdate(ref int Score)
         {
-            //WALL
-            if (GameBall.iBallY + GameBall.iDirectionY >= mapHeight)
-            {
-                game.Init();
-            }
+            #region
+            //Win the game
+            if (CheckIfWin()) return false;
 
-            if (!IsCollide(ref game.Score))
-            {
-                map[GameBall.iBallY, GameBall.iBallX] = 0;
-                GameBall.iBallX += GameBall.iDirectionX;
-                GameBall.iBallY += GameBall.iDirectionY;
-                map[GameBall.iBallY, GameBall.iBallX] = (int)DefinedNumbersForGame.BALL;
+            //When the ball touched the bottom of the field => New game
+            if (m_GameBall.m_iBallY + m_GameBall.m_iDirectionY >= m_MapHeight) return false;
 
-                if (KoefToAddLine * 15 <= game.Score)
+
+            //Move to the next position
+            if (!IsCollide(ref Score))
+            {
+                m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX] = 0;
+                m_GameBall.m_iBallX += m_GameBall.m_iDirectionX;
+                m_GameBall.m_iBallY += m_GameBall.m_iDirectionY;
+                m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX] = (int)ENUM_DefinedNumbersForGame.BALL;
+
+                if (m_KoefToAddLine * (int)ENUM_DefinedNumbersForGame.COUNT_OF_BROKEN_PLATFORMS_TO_ADD_LINES <= Score)
                 {
-                    if (!AddLine(ref game.Score)) game.Init();
-                    ++KoefToAddLine;
+                    if (!AddLine()) return false;
+
+                    ++m_KoefToAddLine;
                 }
             }
 
+            return true;
+            #endregion
+        }
 
-        }
-        public int this[int i, int j]
+        public bool CheckIfWin()
         {
-            get
+            #region
+            for (int i = 0; i<m_MapHeight; ++i)
             {
-                return map[i, j];
+                for (int j = 0; j<m_MapWidth; ++j)
+                {
+                    if (m_Map[i, j] != 0 && m_Map[i, j] <= (int)ENUM_DefinedNumbersForGame.BLOCK1_MAX) return false;
+                }
             }
-            set
-            {
-                map[i, j] = value;
-            }
+
+            return true;
+            #endregion
         }
+       
     }
 }

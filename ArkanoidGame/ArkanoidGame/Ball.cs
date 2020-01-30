@@ -1,37 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ArkanoidGame.Interfaces;
+using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArkanoidGame
 {
-    class Ball
+    class Ball : IBall
     {
-        public int MaxPlatformY { set; get; } = Map.mapHeight / 4;
-        public int iBallX { set; get; } = 0;
-        public int iBallY { set; get; } = 0;
+        #region properities
+        public int m_MaxPlatformY { set; get; } =  Map.m_MapHeight / 4;
+        public int m_iBallX { set; get; } = 0;
+        public int m_iBallY { set; get; } = 0;
 
-        public int iDirectionX { set; get; } = 1;
-        public int iDirectionY { set; get; } = 1;
+        public int m_iDirectionX { set; get; } = 1;
+        public int m_iDirectionY { set; get; } = 1;
 
-        public Image ArkanoidBall { set; get; }
-
+        public Image m_ArkanoidBall { set; get; }
+        #endregion
         public Ball ()
         {
-            ArkanoidBall = new Bitmap(@"Pictures\ball_green.png");
+            #region
+            m_ArkanoidBall = new Bitmap(@"Pictures\ball_green.png");
+            #endregion
         }
 
         public void SetInitProperities(Set set)
         {
-            
+            #region
             Random PositionOfBall = new Random();
-            iBallX = PositionOfBall.Next(0, Map.mapWidth - 1);
-            iBallY = set.iSetY - 1;
+            m_iBallX = PositionOfBall.Next(0, Map.m_MapWidth - 1);
+            m_iBallY = set.m_iSetY - 1;
 
-            iDirectionX = 1;
-            iDirectionY = -1;
+            m_iDirectionX = 1;
+            m_iDirectionY = -1;
+            #endregion
         }
 
     }

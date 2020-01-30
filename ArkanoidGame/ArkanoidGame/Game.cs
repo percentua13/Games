@@ -1,88 +1,85 @@
-﻿using System;
+﻿using ArkanoidGame.Interfaces;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+
 namespace ArkanoidGame
 {
-    enum DefinedNumbersForGame
+    class Game : IGame
     {
-        BALL = 88,
-        SET1 = 99,
-        SET2 = 999,
-        SET3 = 9999,
-        BLOCK1 = 1,
-        BLOCK2 = 11,
-        LEFT_MARGIN = 140,
-    }
-    class Game
-    {
-        public const int PixelSize = 20;
+        #region fields
+        private readonly IMap map;
 
-        private Map map;
+        private int Score  = 0;
 
-        public int Score  = 0;
-
-        private /*readonly*/ Label lbl_Score;
-
-        private Form form;
-
-        private Timer TimerForGame;
-        public Game(Form form, ref Timer timer)
+        private readonly Label lbl_Score;
+        #endregion
+        public Game(ref Label lbl_Score, out int FormWidth, out int FormHeight)
         {
-            lbl_Score = new Label() { Text = $"Score : {Score.ToString()}" };
-            lbl_Score.Font = new Font("MV Boli", 10);
-            lbl_Score.AutoSize = true;
+            #region
 
-            lbl_Score.Location = new Point(0, (int)(Map.mapHeight / 2.5 * PixelSize));
+            //FORM
+            FormWidth = (int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + Map.m_MapWidth * (int)ENUM_DefinedNumbersForGame.PIXEL_SIZE + 19;
+            FormHeight = Map.m_MapHeight * (int)ENUM_DefinedNumbersForGame.PIXEL_SIZE + 48;
 
-            form.Controls.Add(lbl_Score);
-            
-
-            this.form = form;
-            
-            TimerForGame = timer;
+            this.lbl_Score = lbl_Score;
             
             map = new Map();
 
-            Init();
+            InitalizationParametersForNewGame();
+            #endregion
         }
-        internal void Init()
+        private void InitalizationParametersForNewGame()
         {
+            #region
             Score = 0;
 
             lbl_Score.Text = "Score : " + Score.ToString();
-
-            //FORM
-            form.Width = (int)DefinedNumbersForGame.LEFT_MARGIN + Map.mapWidth * PixelSize + 19;
-            form.Height = Map.mapHeight * PixelSize + 48;      
-           
-            map?.SetInitProperities();
+             
+            map?.SetInitialProperities();
+            #endregion
+        }
+        private void DrawArea(Graphics g)
+        {
+            #region
+            g.DrawRectangle(Pens.Black, new Rectangle((int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + 0, 0, Map.m_MapWidth * (int)ENUM_DefinedNumbersForGame.PIXEL_SIZE, Map.m_MapHeight * (int)ENUM_DefinedNumbersForGame.PIXEL_SIZE));
+            #endregion
+        }
+        private void DrawMap(Graphics g)
+        {
+            #region
+            map.DrawMap(g);
+            #endregion
         }
 
-        internal void OnPaint(object sender, PaintEventArgs e)
+        public void OnPaint(object sender, PaintEventArgs e)
         {
+            #region
             DrawMap(e.Graphics);
             DrawArea(e.Graphics);
+            #endregion
         }
+        public bool UpdateGameInfo(object sender, EventArgs e)
+        {
+            #region
+            if (!map.IfMapCanBeApdate(ref Score))
+            {
+                bool answ = map.CheckIfWin();
+                InitalizationParametersForNewGame();
+                return answ;
+            }
 
-        public void DrawArea(Graphics g)
-        {
-            g.DrawRectangle(Pens.Black, new Rectangle((int)DefinedNumbersForGame.LEFT_MARGIN + 0, 0, Map.mapWidth * PixelSize, Map.mapHeight * PixelSize));
-        }
-        public void DrawMap(Graphics g)
-        {
-            map.DrawMap(g, this);
-        }
+            lbl_Score.Text = $"Score : {Score}";
 
-        internal void update(object sender, EventArgs e)
-        {
-            map.update(sender, e, this);
-
-            lbl_Score.Text = "Score : " + Score.ToString();
+            return false;
+            #endregion
         }
-        internal void InputCheck(object sender, KeyEventArgs e)
+        public void KeyInputCheck(object sender, KeyEventArgs e)
         {
-            map.InputCheck(sender, e);
+            #region
+            map.KeyInputCheck(sender, e);
+            #endregion
         }
     }
 }
