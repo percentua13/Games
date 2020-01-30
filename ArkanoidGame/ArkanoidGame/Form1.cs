@@ -51,6 +51,7 @@ namespace ArkanoidGame
 
             CreateLabel(out lbl_Time);
             lbl_Time.Location = new Point((int)ENUM_Properities.LEFT_MARGIN+245, Map.m_MapHeight * (int)ENUM_Properities.PIXEL_SIZE + 20);
+            lbl_Time.Text = "Time : 00:00:00";
 
             TimerForGame = new Timer() { Interval = 60 };
             Clock = new Timer() { Interval = 1000 };
@@ -69,12 +70,11 @@ namespace ArkanoidGame
 
 
             //Add events
-            TimerForGame.Tick += new EventHandler(Tick);
+            Clock.Tick += new EventHandler(Tick);
             TimerForGame.Tick += new EventHandler(UpdateGameInfo_Win);
 
             KeyUp += new KeyEventHandler(KeyInputCheck);
             KeyDown += KeyInputCheck;
-
 
             //Activate timers
             TimerForGame.Start();
