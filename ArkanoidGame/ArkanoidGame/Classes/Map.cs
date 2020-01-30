@@ -97,7 +97,6 @@ namespace ArkanoidGame
                 }
             }
             #endregion
-            int a = 4;
         }
 
         //Add new line whether is there free space

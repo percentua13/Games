@@ -1,0 +1,8 @@
+C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\bin\Release\ArkanoidGame.exe.config
+C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\bin\Release\ArkanoidGame.exe
+C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\bin\Release\ArkanoidGame.pdb
+C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Release\ArkanoidGame.ArkanoidForm.resources
+C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Release\ArkanoidGame.Properties.Resources.resources
+C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Release\ArkanoidGame.csproj.GenerateResource.cache
+C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Release\ArkanoidGame.exe
+C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Release\ArkanoidGame.pdb

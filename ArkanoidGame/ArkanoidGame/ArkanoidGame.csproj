@@ -64,22 +64,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ENUM.cs" />
+    <Compile Include="Classes\ENUM.cs" />
     <Compile Include="Interfaces\IBall.cs" />
     <Compile Include="Interfaces\ICoordinates.cs" />
     <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Interfaces\IMap.cs" />
-    <Compile Include="Set.cs" />
-    <Compile Include="Ball.cs" />
+    <Compile Include="Classes\Set.cs" />
+    <Compile Include="Classes\Ball.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Game.cs" />
-    <Compile Include="Map.cs" />
-    <Compile Include="Platform.cs" />
+    <Compile Include="Classes\Game.cs" />
+    <Compile Include="Classes\Map.cs" />
+    <Compile Include="Classes\Platform.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
