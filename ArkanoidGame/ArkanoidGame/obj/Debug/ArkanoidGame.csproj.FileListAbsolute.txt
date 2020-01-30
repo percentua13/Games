@@ -2,8 +2,8 @@ C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\bin\Debug\ArkanoidGame.exe
 C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\bin\Debug\ArkanoidGame.exe
 C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\bin\Debug\ArkanoidGame.pdb
 C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Debug\ArkanoidGame.csprojAssemblyReference.cache
-C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Debug\ArkanoidGame.Form1.resources
 C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Debug\ArkanoidGame.Properties.Resources.resources
 C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Debug\ArkanoidGame.csproj.GenerateResource.cache
 C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Debug\ArkanoidGame.exe
 C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Debug\ArkanoidGame.pdb
+C:\Users\perce\Desktop\Game\ArkanoidGame\ArkanoidGame\obj\Debug\ArkanoidGame.ArkanoidForm.resources

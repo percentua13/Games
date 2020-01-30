@@ -1,6 +1,6 @@
 ﻿namespace ArkanoidGame
 {
-    partial class Form1
+    partial class ArkanoidForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,17 +29,24 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ArkanoidForm));
             this.TimerForGame = new System.Windows.Forms.Timer(this.components);
+            this.Clock = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
-            // Form1
+            // Clock
+            // 
+            // 
+            // ArkanoidForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.DoubleBuffered = true;
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "ArkanoidForm";
+            this.Text = "Infinity Arcanoid";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
             this.ResumeLayout(false);
 
@@ -48,6 +55,7 @@
         #endregion
 
         private System.Windows.Forms.Timer TimerForGame;
+        private System.Windows.Forms.Timer Clock;
     }
 }
 

@@ -12,6 +12,7 @@ namespace ArkanoidGame
         SET3 = 9999,
         BLOCK1 = 1,
         BLOCK2 = 11,
+        LEFT_MARGIN = 140,
     }
     class Game
     {
@@ -28,17 +29,18 @@ namespace ArkanoidGame
         private Timer TimerForGame;
         public Game(Form form, ref Timer timer)
         {
-            lbl_Score = new Label() { Text = "Score : " + Score.ToString() };
-            lbl_Score.Location = new Point(Map.mapWidth * PixelSize + 5, (int)(Map.mapHeight / 2.5 * PixelSize));
+            lbl_Score = new Label() { Text = $"Score : {Score.ToString()}" };
+            lbl_Score.Font = new Font("MV Boli", 10);
+            lbl_Score.AutoSize = true;
+
+            lbl_Score.Location = new Point(0, (int)(Map.mapHeight / 2.5 * PixelSize));
 
             form.Controls.Add(lbl_Score);
+            
 
             this.form = form;
             
             TimerForGame = timer;
-
-            TimerForGame.Interval = 60;
-
             
             map = new Map();
 
@@ -51,7 +53,7 @@ namespace ArkanoidGame
             lbl_Score.Text = "Score : " + Score.ToString();
 
             //FORM
-            form.Width = Map.mapWidth * PixelSize + 100;
+            form.Width = (int)DefinedNumbersForGame.LEFT_MARGIN + Map.mapWidth * PixelSize + 19;
             form.Height = Map.mapHeight * PixelSize + 48;      
            
             map?.SetInitProperities();
@@ -65,7 +67,7 @@ namespace ArkanoidGame
 
         public void DrawArea(Graphics g)
         {
-            g.DrawRectangle(Pens.Black, new Rectangle(0, 0, Map.mapWidth * PixelSize, Map.mapHeight * PixelSize));
+            g.DrawRectangle(Pens.Black, new Rectangle((int)DefinedNumbersForGame.LEFT_MARGIN + 0, 0, Map.mapWidth * PixelSize, Map.mapHeight * PixelSize));
         }
         public void DrawMap(Graphics g)
         {

@@ -9,7 +9,7 @@ namespace ArkanoidGame
 {
     class Ball
     {
-        public int MaxPlatformY { set; get; } = /*mapHeight/4*/ 25/4;
+        public int MaxPlatformY { set; get; } = Map.mapHeight / 4;
         public int iBallX { set; get; } = 0;
         public int iBallY { set; get; } = 0;
 
@@ -27,14 +27,12 @@ namespace ArkanoidGame
         {
             
             Random PositionOfBall = new Random();
-            iBallX = PositionOfBall.Next(0, Map.mapWidth - 1);// iPlatformX  - 3;
+            iBallX = PositionOfBall.Next(0, Map.mapWidth - 1);
             iBallY = set.iSetY - 1;
 
             iDirectionX = 1;
             iDirectionY = -1;
         }
-
-
 
     }
 }
