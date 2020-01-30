@@ -43,7 +43,7 @@
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ArkanoidForm";
-            this.Text = "Infinity Arkanoid";
+            this.Text = "Infinite Arkanoid";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
             this.ResumeLayout(false);
 
