@@ -18,17 +18,17 @@ namespace ArkanoidGame
 
         public Image ArkanoidBall { set; get; }
 
-        public Ball (string path)
+        public Ball ()
         {
-            ArkanoidBall = new Bitmap(path);
+            ArkanoidBall = new Bitmap(@"Pictures\ball_green.png");
         }
 
-        public void SetInitProperities(Map map)
+        public void SetInitProperities(Set set)
         {
             
             Random PositionOfBall = new Random();
-            iBallX = PositionOfBall.Next(0, Game.mapWidth - 1);// iPlatformX  - 3;
-            iBallY = map.iPlatformY - 1;
+            iBallX = PositionOfBall.Next(0, Map.mapWidth - 1);// iPlatformX  - 3;
+            iBallY = set.iSetY - 1;
 
             iDirectionX = 1;
             iDirectionY = -1;

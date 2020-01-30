@@ -1,30 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ArkanoidGame
 {
     class Map
     {
-        public int iPlatformX { set; get; } = 0;
-        public int iPlatformY { set; get; } = 0;
-
         Ball GameBall = null;
-        const int mapWidth = 20;
-        const int mapHeight = 30;
-        const int PixelSize = 20;
+        internal const int mapWidth = 20;
+        internal const int mapHeight = 30;
+        internal const int PixelSize = 20;
 
         private int[,] map = null;
+
+        private Platform ArkanoidPlatform;
+
+        private Set ArkanoidSet;
 
        public Map()
        {
             map = new int[mapHeight + 2, mapWidth + 2];
 
-            GameBall = new Ball(@"Pictures\ball_green.png");
+            GameBall = new Ball();
+
+            ArkanoidSet = new Set();
+
+            ArkanoidPlatform = new Platform();
         }
 
         private void ClearGame()
@@ -42,28 +43,33 @@ namespace ArkanoidGame
         {
             GameBall.MaxPlatformY = mapHeight / 4;
 
-            iPlatformX = (mapWidth - 1) / 2;
-            iPlatformY = mapHeight - 1;
+            ArkanoidSet.iSetX = new Random().Next(0, mapWidth - 1);
+            ArkanoidSet.iSetY = mapHeight - 1;
 
             ClearGame();
             GeneratePlatforms();
 
-            GameBall.SetInitProperities(this);
+            GameBall.SetInitProperities(ArkanoidSet);
 
-            map[iPlatformY, iPlatformX] = (int)Numbers.SET1;
-            map[iPlatformY, iPlatformX + 1] = (int)Numbers.SET2;
-            map[iPlatformY, iPlatformX + 2] = (int)Numbers.SET3;
-            map[GameBall.iBallY, GameBall.iBallX] = (int)Numbers.BALL;
+            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX] = (int)DefinedNumbersForGame.SET1;
+            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 1] = (int)DefinedNumbersForGame.SET2;
+            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 2] = (int)DefinedNumbersForGame.SET3;
+            map[GameBall.iBallY, GameBall.iBallX] = (int)DefinedNumbersForGame.BALL;
+
         }
 
         private void GeneratePlatforms()
         {
+            Random rand = new Random();
+
             for (int i = 0; i < GameBall?.MaxPlatformY; ++i)
             {
                 for (int j = 0; j < mapWidth; j += 2)
                 {
-                    map[i, j] = (int)Numbers.BLOCK1;
-                    map[i, j + 1] = (int)Numbers.BLOCK2;
+                    
+                    int index = rand.Next(1, 9);
+                    map[i, j] = index;
+                    map[i, j + 1] = index * 10;
                 }
             }
         }
@@ -80,17 +86,17 @@ namespace ArkanoidGame
             {
                 for (int j = 0; j < mapWidth; j += 2)
                 {
-                    if (map[i - 1, j] != (int)Numbers.BALL && map[i, j] != (int)Numbers.BALL)
+                    if (map[i - 1, j] != (int)DefinedNumbersForGame.BALL && map[i, j] != (int)DefinedNumbersForGame.BALL)
                         map[i, j] = map[i - 1, j];
                 }
             }
 
             for (int j = 0; j < mapWidth; j += 2)
             {
-                if (map[0, j] != (int)Numbers.BALL && map[0, j + 1] != (int)Numbers.BALL)
+                if (map[0, j] != (int)DefinedNumbersForGame.BALL && map[0, j + 1] != (int)DefinedNumbersForGame.BALL)
                 {
-                    map[0, j] = (int)Numbers.BLOCK1;
-                    map[0, j + 1] = (int)Numbers.BLOCK2;
+                    map[0, j] = (int)DefinedNumbersForGame.BLOCK1;
+                    map[0, j + 1] = (int)DefinedNumbersForGame.BLOCK2;
                 }
             }
 
@@ -105,30 +111,35 @@ namespace ArkanoidGame
             {
                 for (int j = 0; j < mapWidth; ++j)
                 {
-                    if (map[i, j] == (int)Numbers.SET1)
+                    if (map[i, j] == (int)DefinedNumbersForGame.SET1)
                     {
-                        g.DrawImage(game.ArkanoidSet, new Rectangle(new Point(j * PixelSize, i * PixelSize), new Size(60, 20)), 0, 0, 64, 16, GraphicsUnit.Pixel);
+                        g.DrawImage(ArkanoidSet.SetImage, new Rectangle(new Point(j * PixelSize, i * PixelSize), new Size(60, 20)), 0, 0, 64, 16, GraphicsUnit.Pixel);
                     }
+
                     switch (map[i, j])
                     {
-                        case (int)Numbers.SET1:
-                            g.DrawImage(game.ArkanoidSet, new Rectangle(new Point(j * PixelSize, i * PixelSize), new Size(60, 20)), 0, 0, 64, 16, GraphicsUnit.Pixel);
+                        case (int)DefinedNumbersForGame.SET1:
+                            g.DrawImage(ArkanoidSet.SetImage, new Rectangle(new Point(j * PixelSize, i * PixelSize), new Size(60, 20)), 0, 0, 64, 16, GraphicsUnit.Pixel);
                             break;
 
-                        case (int)Numbers.BALL:
+                        case (int)DefinedNumbersForGame.BALL:
                             g.DrawImage(GameBall.ArkanoidBall, new Rectangle(new Point(j * PixelSize, i * PixelSize), new Size(20, 20)), 0, 0, 20, 20, GraphicsUnit.Pixel);
                             break;
 
-                        case (int)Numbers.BLOCK1:
-                            g.DrawImage(game.ArkanoidPlatform_1, new Rectangle(new Point(j * PixelSize, i * PixelSize), new Size(40, 20)), 0, 0, 40, 20, GraphicsUnit.Pixel);
+                        case 0:
+                            break;
+
+                        default:
+                            int index = map[i, j]-1;
+
+                            if (index < Platform.CountOfPlatforms) 
+                                 g.DrawImage(ArkanoidPlatform.PlatformImage, new Rectangle(new Point(j * PixelSize, i * PixelSize), new Size(40, 20)), ArkanoidPlatform[index].X_1, ArkanoidPlatform[index].Y_1, ArkanoidPlatform[index].X_Size, ArkanoidPlatform[index].Y_Size, GraphicsUnit.Pixel);
+                           
                             break;
 
                     }
                 }
-            }
-            //!!!
-            int a = 4;
-          
+            }       
         }
 
         internal bool IsCollide(ref int Score)
@@ -151,7 +162,7 @@ namespace ArkanoidGame
             }
 
             //SET
-            if (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] >= (int)Numbers.SET1)
+            if (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] >= (int)DefinedNumbersForGame.SET1)
             {
                 GameBall.iDirectionX *= -1;
                 IsCollide = true;
@@ -160,7 +171,7 @@ namespace ArkanoidGame
             }
 
             //SET
-            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] >= (int)Numbers.SET1)
+            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] >= (int)DefinedNumbersForGame.SET1)
             {
                 GameBall.iDirectionY *= -1;
                 IsCollide = true;
@@ -168,7 +179,7 @@ namespace ArkanoidGame
                 return IsCollide;
             }
             //SET
-            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] >= (int)Numbers.SET1)
+            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] >= (int)DefinedNumbersForGame.SET1)
             {
                 GameBall.iDirectionX *= -1;
                 GameBall.iDirectionY *= -1;
@@ -177,17 +188,17 @@ namespace ArkanoidGame
                 return IsCollide;
             }
             //BLOCK
-            if (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] < (int)Numbers.SET1 && map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] != 0)
+            if (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] < (int)DefinedNumbersForGame.SET1 && map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] != 0)
             {
-                map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] = (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] == (int)Numbers.BALL) ? (int)Numbers.BALL : 0;
+                map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] = (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
 
                 if (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX] < 10)
                 {
-                    map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX + 1] = (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX + 1] == (int)Numbers.BALL) ? (int)Numbers.BALL : 0;
+                    map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX + 1] = (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX + 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
                 }
                 else
                 {
-                    map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX - 1] = (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX - 1] == (int)Numbers.BALL) ? (int)Numbers.BALL : 0;
+                    map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX - 1] = (map[GameBall.iBallY, GameBall.iBallX + GameBall.iDirectionX - 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
                 }
 
                 GameBall.iDirectionX *= -1;
@@ -199,18 +210,18 @@ namespace ArkanoidGame
             }
 
             //BLOCK
-            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] < (int)Numbers.SET1 && map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] != 0)
+            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] < (int)DefinedNumbersForGame.SET1 && map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] != 0)
             {
-                map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] == (int)Numbers.BALL) ? (int)Numbers.BALL : 0;
+                map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
 
                 if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX] < 10)
                 {
-                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + 1] == (int)Numbers.BALL) ? (int)Numbers.BALL : 0;
+                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
 
                 }
                 else
                 {
-                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX - 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX - 1] == (int)Numbers.BALL) ? (int)Numbers.BALL : 0;
+                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX - 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX - 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
                 }
 
                 GameBall.iDirectionY *= -1;
@@ -223,18 +234,18 @@ namespace ArkanoidGame
             }
 
             //BLOCK
-            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] < (int)Numbers.SET1 && map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] != 0)
+            if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] < (int)DefinedNumbersForGame.SET1 && map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] != 0)
             {
 
-                map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] == (int)Numbers.BALL) ? (int)Numbers.BALL : 0;
+                map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
 
                 if (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX] < 10)
                 {
-                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX + 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX + 1] == (int)Numbers.BALL) ? (int)Numbers.BALL : 0;
+                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX + 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX + 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
                 }
                 else
                 {
-                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX - 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX - 1] == (int)Numbers.BALL) ? (int)Numbers.BALL : 0;
+                    map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX - 1] = (map[GameBall.iBallY + GameBall.iDirectionY, GameBall.iBallX + GameBall.iDirectionX - 1] == (int)DefinedNumbersForGame.BALL) ? (int)DefinedNumbersForGame.BALL : 0;
                 }
 
                 GameBall.iDirectionX *= -1;
@@ -255,26 +266,27 @@ namespace ArkanoidGame
         {
             if (e.KeyCode != Keys.Left && e.KeyCode != Keys.Right) return;
 
-            map[iPlatformY, iPlatformX] = 0;
-            map[iPlatformY, iPlatformX + 1] = 0;
-            map[iPlatformY, iPlatformX + 2] = 0;
+            //Set has length = 3 points
+            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX] = 0;
+            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 1] = 0;
+            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 2] = 0;
 
             switch (e.KeyCode)
             {
                 case Keys.Right:
-                    if (iPlatformX + 3 < mapWidth)
-                        ++iPlatformX;
+                    if (ArkanoidSet.iSetX + 3 < mapWidth)
+                        ++ArkanoidSet.iSetX;
                     break;
 
                 case Keys.Left:
-                    if (iPlatformX - 1 >= 0)
-                        --iPlatformX;
+                    if (ArkanoidSet.iSetX - 1 >= 0)
+                        --ArkanoidSet.iSetX;
                     break;
             }
 
-            map[iPlatformY, iPlatformX] = (int)Numbers.SET1;
-            map[iPlatformY, iPlatformX + 1] = (int)Numbers.SET2;
-            map[iPlatformY, iPlatformX + 2] = (int)Numbers.SET3;
+            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX] = (int)DefinedNumbersForGame.SET1;
+            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 1] = (int)DefinedNumbersForGame.SET2;
+            map[ArkanoidSet.iSetY, ArkanoidSet.iSetX + 2] = (int)DefinedNumbersForGame.SET3;
         }
 
         internal void update(object sender, EventArgs e, Game game)
@@ -290,7 +302,7 @@ namespace ArkanoidGame
                 map[GameBall.iBallY, GameBall.iBallX] = 0;
                 GameBall.iBallX += GameBall.iDirectionX;
                 GameBall.iBallY += GameBall.iDirectionY;
-                map[GameBall.iBallY, GameBall.iBallX] = (int)Numbers.BALL;
+                map[GameBall.iBallY, GameBall.iBallX] = (int)DefinedNumbersForGame.BALL;
 
                 if (game.Score % 15 == 0 && game.Score > 0)
                     if (!AddLine(ref game.Score)) game.Init();

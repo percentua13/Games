@@ -4,27 +4,21 @@ using System.Windows.Forms;
 
 namespace ArkanoidGame
 {
-    enum Numbers
+    enum DefinedNumbersForGame
     {
-        BALL = 8,
+        BALL = 88,
         SET1 = 99,
         SET2 = 999,
         SET3 = 9999,
         BLOCK1 = 1,
         BLOCK2 = 11,
     }
-
     class Game
     {
-        //private Ball GameBall;
-        public const int mapWidth = 20;
-        public const int mapHeight = 30;
         public const int PixelSize = 20;
 
         private Map map;
 
-        public Image ArkanoidSet;
-        public Image ArkanoidPlatform_1;
         public int Score  = 0;
 
         private /*readonly*/ Label lbl_Score;
@@ -35,7 +29,7 @@ namespace ArkanoidGame
         public Game(Form form, ref Timer timer)
         {
             lbl_Score = new Label() { Text = "Score : " + Score.ToString() };
-            lbl_Score.Location = new Point(mapWidth * PixelSize + 5, (int)(mapHeight / 2.5 * PixelSize));
+            lbl_Score.Location = new Point(Map.mapWidth * PixelSize + 5, (int)(Map.mapHeight / 2.5 * PixelSize));
 
             form.Controls.Add(lbl_Score);
 
@@ -52,26 +46,15 @@ namespace ArkanoidGame
         }
         internal void Init()
         {
-            //INIT
             Score = 0;
-           // GameBall.MaxPlatformY = mapHeight / 4;
+
             lbl_Score.Text = "Score : " + Score.ToString();
 
             //FORM
-            form.Width = mapWidth * PixelSize + 100;
-            form.Height = mapHeight * PixelSize + 48;
-
-
-            ArkanoidSet = new Bitmap(@"Pictures\set_violet.png");
-            
-            ArkanoidPlatform_1 = new Bitmap(@"Pictures\platform_gold.png");
-
-           
-           // TimerForGame.Interval = 60;
+            form.Width = Map.mapWidth * PixelSize + 100;
+            form.Height = Map.mapHeight * PixelSize + 48;      
            
             map?.SetInitProperities();
-
-            //TimerForGame?.Start();
         }
 
         internal void OnPaint(object sender, PaintEventArgs e)
@@ -82,7 +65,7 @@ namespace ArkanoidGame
 
         public void DrawArea(Graphics g)
         {
-            g.DrawRectangle(Pens.Black, new Rectangle(0, 0, mapWidth * PixelSize, mapHeight * PixelSize));
+            g.DrawRectangle(Pens.Black, new Rectangle(0, 0, Map.mapWidth * PixelSize, Map.mapHeight * PixelSize));
         }
         public void DrawMap(Graphics g)
         {
@@ -92,7 +75,7 @@ namespace ArkanoidGame
         internal void update(object sender, EventArgs e)
         {
             map.update(sender, e, this);
-             //????
+
             lbl_Score.Text = "Score : " + Score.ToString();
         }
         internal void InputCheck(object sender, KeyEventArgs e)
