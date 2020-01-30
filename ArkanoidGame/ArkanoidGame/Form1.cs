@@ -45,12 +45,12 @@ namespace ArkanoidGame
         private void GameInitialization()
         {
             #region
-            //Create form elements
+            //Create Form elements
             CreateLabel(out lbl_Score);
-            lbl_Score.Location = new Point(0, (int)(Map.m_MapHeight / 2.5 * (int)ENUM_DefinedNumbersForGame.PIXEL_SIZE));
+            lbl_Score.Location = new Point((int)ENUM_Properities.LEFT_MARGIN, Map.m_MapHeight  * (int)ENUM_Properities.PIXEL_SIZE + 20);
 
             CreateLabel(out lbl_Time);
-            lbl_Time.Location = new Point(4, this.Height - 70);
+            lbl_Time.Location = new Point((int)ENUM_Properities.LEFT_MARGIN+245, Map.m_MapHeight * (int)ENUM_Properities.PIXEL_SIZE + 20);
 
             TimerForGame = new Timer() { Interval = 60 };
             Clock = new Timer() { Interval = 1000 };
@@ -58,11 +58,15 @@ namespace ArkanoidGame
 
             //Create new game and set form size properities
             int FormWidth, FormHeight;
-
             ArkanoidGame = new Game(ref lbl_Score, out FormWidth, out FormHeight);
 
-            this.Height = FormHeight;
+            
+            //Set Form size
             this.Width = FormWidth;
+            this.Height = FormHeight; 
+            this.MaximumSize = new Size(this.Width, this.Height);
+            this.MinimumSize = new Size(this.Width, this.Height);
+
 
             //Add events
             TimerForGame.Tick += new EventHandler(Tick);
@@ -81,6 +85,7 @@ namespace ArkanoidGame
 
         internal void UpdateGameInfo_Win(object sender, EventArgs e)
         {
+            #region
             if (ArkanoidGame.UpdateGameInfo(sender, e))
             {
                 TimerForGame.Tick -= UpdateGameInfo_Win;
@@ -89,7 +94,9 @@ namespace ArkanoidGame
 
                 TimerForGame.Tick += new EventHandler(UpdateGameInfo_Win);
             }
+
             Invalidate();
+            #endregion
         }
 
         //Find how much time is passed
@@ -102,8 +109,8 @@ namespace ArkanoidGame
             PassedTime.hours += PassedTime.minutes / 60;
             PassedTime.minutes %= 60;
             PassedTime.seconds %= 60;
-            
-            lbl_Time.Text = $"Time : {PassedTime.hours}:{PassedTime.minutes}:{PassedTime.seconds}";
+
+            lbl_Time.Text = String.Format("Time : {0:D2}:{1:D2}:{2:D2}", PassedTime.hours, PassedTime.minutes, PassedTime.seconds);
             #endregion
         }
         internal void KeyInputCheck(object sender, KeyEventArgs e)

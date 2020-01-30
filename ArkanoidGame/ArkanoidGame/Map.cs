@@ -60,7 +60,7 @@ namespace ArkanoidGame
             m_KoefToAddLine = 1;
 
             //Initial count of lines 
-            m_GameBall.m_MaxPlatformY = m_GameBall.m_MaxPlatformY;//m_MapHeight / 4;
+            m_GameBall.m_MaxPlatformY = m_GameBall.m_MaxPlatformY;
 
             //Initial Coordinates of Set - (center - bottom of map) 
             m_ArkanoidSet.m_iSetX = (m_MapWidth-3) / 2;
@@ -71,10 +71,10 @@ namespace ArkanoidGame
 
             m_GameBall.SetInitProperities(m_ArkanoidSet);
 
-            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX] = (int)ENUM_DefinedNumbersForGame.SET1;
-            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 1] = (int)ENUM_DefinedNumbersForGame.SET2;
-            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 2] = (int)ENUM_DefinedNumbersForGame.SET3;
-            m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX] = (int)ENUM_DefinedNumbersForGame.BALL;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX] = (int)ENUM_Properities.SET1;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 1] = (int)ENUM_Properities.SET2;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 2] = (int)ENUM_Properities.SET3;
+            m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX] = (int)ENUM_Properities.BALL;
             #endregion
         }
 
@@ -88,41 +88,49 @@ namespace ArkanoidGame
             {
                 for (int j = 0; j < m_MapWidth; j += 2)
                 {
+                    //Create random platform(color)
                     int index = rand.Next(1, Platform.CountOfPlatforms);
+
+                    //Begin of platform will have positive value, end - negative value
                     m_Map[i, j] = index;
-                    m_Map[i, j + 1] = index * 10;
+                    m_Map[i, j + 1] = - index;
                 }
             }
             #endregion
+            int a = 4;
         }
 
         //Add new line whether is there free space
-        private bool AddLine()
+        private bool CanAddNewLine()
         {
             #region
             //New Game
             if (m_GameBall.m_MaxPlatformY + 1 >= m_MapHeight - 1) return false;
 
 
+            //Lines shift down for 1 position
             for (int i = m_GameBall.m_MaxPlatformY; i > 0; --i)
             {
                 for (int j = 0; j < m_MapWidth; j += 2)
                 {
-                    if (m_Map[i - 1, j] != (int)ENUM_DefinedNumbersForGame.BALL && m_Map[i, j] != (int)ENUM_DefinedNumbersForGame.BALL)
+                    if (m_Map[i - 1, j] != (int)ENUM_Properities.BALL && m_Map[i, j] != (int)ENUM_Properities.BALL)
                         m_Map[i, j] = m_Map[i - 1, j];
                 }
             }
 
+
+            //Fill the first line
             Random rand = new Random();
             for (int j = 0; j < m_MapWidth; j += 2)
             {
-                if (m_Map[0, j] != (int)ENUM_DefinedNumbersForGame.BALL && m_Map[0, j + 1] != (int)ENUM_DefinedNumbersForGame.BALL)
+                if (m_Map[0, j] != (int)ENUM_Properities.BALL && m_Map[0, j + 1] != (int)ENUM_Properities.BALL)
                 {
                     m_Map[0, j] = rand.Next(1, Platform.CountOfPlatforms);
-                    m_Map[0, j + 1] = m_Map[0, j]*10;
+                    m_Map[0, j + 1] = - m_Map[0, j];
                 }
             }
 
+            //Increase the count of lines
             ++m_GameBall.m_MaxPlatformY;
 
             return true;
@@ -136,37 +144,27 @@ namespace ArkanoidGame
             {
                 for (int j = 0; j < m_MapWidth; ++j)
                 {
-                    if (m_Map[i, j] == (int)ENUM_DefinedNumbersForGame.SET1)
+
+                    //If SET (length : 3 px, width : 1 px)
+                    if (m_Map[i, j] == (int)ENUM_Properities.SET1)
                     {
-                        g.DrawImage(m_ArkanoidSet.SetImage, new Rectangle(new Point((int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + j * m_PixelSize, i * m_PixelSize), new Size(60, 20)), 0, 0, 64, 16, GraphicsUnit.Pixel);
+                        g.DrawImage(m_ArkanoidSet.SetImage, new Rectangle(new Point((int)ENUM_Properities.LEFT_MARGIN + j * m_PixelSize, i * m_PixelSize), new Size(3 * (int)ENUM_Properities.PIXEL_SIZE, (int)ENUM_Properities.PIXEL_SIZE)), 0, 0, 64, 16, GraphicsUnit.Pixel);
+                        continue;
                     }
 
-                    switch (m_Map[i, j])
+                    //If BALL (length : 1 px, width : 1 px)
+                    if (m_Map[i, j] == (int)ENUM_Properities.BALL)
                     {
-                        //If set
-                        case (int)ENUM_DefinedNumbersForGame.SET1:
-                            g.DrawImage(m_ArkanoidSet.SetImage, new Rectangle(new Point((int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + j * m_PixelSize, i * m_PixelSize), new Size(60, 20)), 0, 0, 64, 16, GraphicsUnit.Pixel);
-                            break;
+                        g.DrawImage(m_GameBall.m_ArkanoidBall, new Rectangle(new Point((int)ENUM_Properities.LEFT_MARGIN + j * m_PixelSize, i * m_PixelSize), new Size((int)ENUM_Properities.PIXEL_SIZE, (int)ENUM_Properities.PIXEL_SIZE)), 0, 0, 20, 20, GraphicsUnit.Pixel);
+                        continue;
+                    }
 
-                        //If ball
-                        case (int)ENUM_DefinedNumbersForGame.BALL:
-                            g.DrawImage(m_GameBall.m_ArkanoidBall, new Rectangle(new Point((int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + j * m_PixelSize, i * m_PixelSize), new Size(20, 20)), 0, 0, 20, 20, GraphicsUnit.Pixel);
-                            break;
-
-                        //If space
-                        case 0:
-                            break;
-
-                        //If platform
-                        default:
-                            int index = m_Map[i, j]-1;
-
-                            if (index < Platform.CountOfPlatforms)
-                            {
-                                (int X_1, int Y_1, int X_Size, int Y_Size) = m_ArkanoidPlatform[index];
-                                g.DrawImage(m_ArkanoidPlatform.PlatformImage, new Rectangle(new Point((int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + j * m_PixelSize, i * m_PixelSize), new Size(40, 20)), X_1, Y_1, X_Size, Y_Size, GraphicsUnit.Pixel);
-                            }
-                            break;
+                    //If PLATFORM (length : 2 px, width : 1 px)
+                    if (m_Map[i, j] > 0 && m_Map[i, j] <= Platform.CountOfPlatforms)
+                    {
+                        (int X_1, int Y_1, int X_Size, int Y_Size) = m_ArkanoidPlatform[m_Map[i, j] - 1];
+                        g.DrawImage(m_ArkanoidPlatform.PlatformImage, new Rectangle(new Point((int)ENUM_Properities.LEFT_MARGIN + j * m_PixelSize, i * m_PixelSize), new Size(2 * (int)ENUM_Properities.PIXEL_SIZE, (int)ENUM_Properities.PIXEL_SIZE)), X_1, Y_1, X_Size, Y_Size, GraphicsUnit.Pixel);
+                        continue;
                     }
                 }
             }
@@ -175,10 +173,10 @@ namespace ArkanoidGame
 
 
         /* 
-         * Determines if there is an obstacle  : Walls, Platform, Set
-         * If true : Walls and Platform => Change directory
-         *         : Platform => Crash platform and change directory
-         */
+        * Determines if there is an obstacle  : Walls, Platform, Set
+        * If true : Walls and Platform => Change directory
+        *         : Platform => Crash platform and change directory
+        */
         private bool IsCollide(ref int Score)
         {
             #region
@@ -206,7 +204,7 @@ namespace ArkanoidGame
             #region SET
             //COLLISION WITH SET
             //Check if set under the ball
-            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] >= (int)ENUM_DefinedNumbersForGame.SET1)
+            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] >= (int)ENUM_Properities.SET1)
             {
                 m_GameBall.m_iDirectionY *= -1;
                 IsCollide = true;
@@ -216,7 +214,7 @@ namespace ArkanoidGame
 
             //COLLISION WITH SET
             //Check if set is diagonal to the ball
-            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] >= (int)ENUM_DefinedNumbersForGame.SET1)
+            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] >= (int)ENUM_Properities.SET1)
             {
                 m_GameBall.m_iDirectionX *= -1;
                 m_GameBall.m_iDirectionY *= -1;
@@ -229,23 +227,23 @@ namespace ArkanoidGame
             #region PLATFORMS
             //COLLISION WITH PLATFORM
             //If ball doesn't cross out the borders => check for collision with platforms
-            if (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] < (int)ENUM_DefinedNumbersForGame.SET1 && m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] != (int)ENUM_DefinedNumbersForGame.EMPTY_BLOCK)
+            if (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] < (int)ENUM_Properities.SET1 && m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] != (int)ENUM_Properities.EMPTY_BLOCK)
             {          
                 //if touch to begin of platform => delete end of platform
-                if (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] < (int)ENUM_DefinedNumbersForGame.BLOCK1_MAX)
+                if (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] > 0)
                 {
                     //if ball on this part => leave ball else => free space
-                    m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] = (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+                    m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] = (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] == (int)ENUM_Properities.BALL) ? (int)ENUM_Properities.BALL : 0;
                 }
                 //if touch to end of platform => delete begin of platform
                 else
                 {
                     //if ball on this part => leave ball else => free space
-                    m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] = (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+                    m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] = (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] == (int)ENUM_Properities.BALL) ? (int)ENUM_Properities.BALL : 0;
                 }
 
                 //delete platform : if ball on this part => leave ball else => free space
-                m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] = (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+                m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] = (m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] == (int)ENUM_Properities.BALL) ? (int)ENUM_Properities.BALL : 0;
 
                 //Change direction
                 m_GameBall.m_iDirectionX *= -1;
@@ -259,25 +257,25 @@ namespace ArkanoidGame
 
             //COLLISION WITH PLATFORM
             //If ball doesn't cross out the borders => check for collision with platforms
-            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] < (int)ENUM_DefinedNumbersForGame.SET1 && m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] != (int)ENUM_DefinedNumbersForGame.EMPTY_BLOCK)
+            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] < (int)ENUM_Properities.SET1 && m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] != (int)ENUM_Properities.EMPTY_BLOCK)
             {
                
                 //if touch to begin of platform => delete end of platform
-                if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] < (int)ENUM_DefinedNumbersForGame.BLOCK1_MAX)
+                if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] > 0)
                 {
                     //if ball on this part => leave ball else => free space
-                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + 1] == (int)ENUM_Properities.BALL) ? (int)ENUM_Properities.BALL : 0;
 
                 }
                 //if touch to end of platform => delete begin of platform
                 else
                 {
                     //if ball on this part => leave ball else => free space
-                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX - 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX - 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX - 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX - 1] == (int)ENUM_Properities.BALL) ? (int)ENUM_Properities.BALL : 0;
                 }
 
                 //delete platform : if ball on this part => leave ball else => free space
-                m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+                m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX] == (int)ENUM_Properities.BALL) ? (int)ENUM_Properities.BALL : 0;
 
                 //Change direction
                 m_GameBall.m_iDirectionY *= -1;
@@ -291,24 +289,24 @@ namespace ArkanoidGame
 
             //COLLISION WITH PLATFORM
             //If ball doesn't cross out the borders => check for collision with platforms
-            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] < (int)ENUM_DefinedNumbersForGame.SET1 && m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] != (int)ENUM_DefinedNumbersForGame.EMPTY_BLOCK)
+            if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] < (int)ENUM_Properities.SET1 && m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] != (int)ENUM_Properities.EMPTY_BLOCK)
             {
                 //if touch to begin of platform => delete end of platform
-                if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] < (int)ENUM_DefinedNumbersForGame.BLOCK1_MAX)
+                if (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] > 0)
                 {
                     //if ball on this part => leave ball else => free space
-                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX + 1] == (int)ENUM_Properities.BALL) ? (int)ENUM_Properities.BALL : 0;
                 }
                 //if touch to end of platform => delete begin of platform
                 else
                 {
                     //if ball on this part => leave ball else => free space
-                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+                    m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX - 1] == (int)ENUM_Properities.BALL) ? (int)ENUM_Properities.BALL : 0;
                 }
 
 
                 //delete platform : if ball on this part => leave ball else => free space
-                m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] == (int)ENUM_DefinedNumbersForGame.BALL) ? (int)ENUM_DefinedNumbersForGame.BALL : 0;
+                m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] = (m_Map[m_GameBall.m_iBallY + m_GameBall.m_iDirectionY, m_GameBall.m_iBallX + m_GameBall.m_iDirectionX] == (int)ENUM_Properities.BALL) ? (int)ENUM_Properities.BALL : 0;
 
 
                 //Change direction
@@ -323,7 +321,7 @@ namespace ArkanoidGame
             #endregion
 
             return IsCollide;
-#endregion
+            #endregion
         }
 
 
@@ -351,9 +349,9 @@ namespace ArkanoidGame
                     break;
             }
 
-            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX] = (int)ENUM_DefinedNumbersForGame.SET1;
-            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 1] = (int)ENUM_DefinedNumbersForGame.SET2;
-            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 2] = (int)ENUM_DefinedNumbersForGame.SET3;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX] = (int)ENUM_Properities.SET1;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 1] = (int)ENUM_Properities.SET2;
+            m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 2] = (int)ENUM_Properities.SET3;
             #endregion
         }
 
@@ -375,11 +373,11 @@ namespace ArkanoidGame
                 m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX] = 0;
                 m_GameBall.m_iBallX += m_GameBall.m_iDirectionX;
                 m_GameBall.m_iBallY += m_GameBall.m_iDirectionY;
-                m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX] = (int)ENUM_DefinedNumbersForGame.BALL;
+                m_Map[m_GameBall.m_iBallY, m_GameBall.m_iBallX] = (int)ENUM_Properities.BALL;
 
-                if (m_KoefToAddLine * (int)ENUM_DefinedNumbersForGame.COUNT_OF_BROKEN_PLATFORMS_TO_ADD_LINES <= Score)
+                if (m_KoefToAddLine * (int)ENUM_Properities.COUNT_OF_BROKEN_PLATFORMS_TO_ADD_LINES <= Score)
                 {
-                    if (!AddLine()) return false;
+                    if (!CanAddNewLine()) return false;
 
                     ++m_KoefToAddLine;
                 }
@@ -396,7 +394,7 @@ namespace ArkanoidGame
             {
                 for (int j = 0; j<m_MapWidth; ++j)
                 {
-                    if (m_Map[i, j] != 0 && m_Map[i, j] <= (int)ENUM_DefinedNumbersForGame.BLOCK1_MAX) return false;
+                    if (m_Map[i, j] != 0 && m_Map[i, j] <= Platform.CountOfPlatforms) return false;
                 }
             }
 

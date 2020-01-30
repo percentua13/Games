@@ -20,8 +20,8 @@ namespace ArkanoidGame
             #region
 
             //FORM
-            FormWidth = (int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + Map.m_MapWidth * (int)ENUM_DefinedNumbersForGame.PIXEL_SIZE + 19;
-            FormHeight = Map.m_MapHeight * (int)ENUM_DefinedNumbersForGame.PIXEL_SIZE + 48;
+            FormWidth = (int)ENUM_Properities.LEFT_MARGIN + Map.m_MapWidth * (int)ENUM_Properities.PIXEL_SIZE + 19;
+            FormHeight = Map.m_MapHeight * (int)ENUM_Properities.PIXEL_SIZE + (int)ENUM_Properities.BOTTOM_MARGIN;
 
             this.lbl_Score = lbl_Score;
             
@@ -43,7 +43,7 @@ namespace ArkanoidGame
         private void DrawArea(Graphics g)
         {
             #region
-            g.DrawRectangle(Pens.Black, new Rectangle((int)ENUM_DefinedNumbersForGame.LEFT_MARGIN + 0, 0, Map.m_MapWidth * (int)ENUM_DefinedNumbersForGame.PIXEL_SIZE, Map.m_MapHeight * (int)ENUM_DefinedNumbersForGame.PIXEL_SIZE));
+            g.DrawRectangle(Pens.Black, new Rectangle((int)ENUM_Properities.LEFT_MARGIN + 0, 0, Map.m_MapWidth * (int)ENUM_Properities.PIXEL_SIZE, Map.m_MapHeight * (int)ENUM_Properities.PIXEL_SIZE));
             #endregion
         }
         private void DrawMap(Graphics g)

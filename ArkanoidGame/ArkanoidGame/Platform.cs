@@ -28,7 +28,7 @@ namespace ArkanoidGame
         }
 
         #region fields
-        public const int CountOfPlatforms = 9;
+        public const int CountOfPlatforms = 21;
         public Image PlatformImage { get; } = new Bitmap(@"Pictures\platforms.png");
         private readonly ICoordinates[] PlatformCoordinates;
         #endregion
@@ -47,6 +47,23 @@ namespace ArkanoidGame
             PlatformCoordinates[6] = new Coordinates() { X_1 = 72, Y_1 = 0};
             PlatformCoordinates[7] = new Coordinates() { X_1 = 72, Y_1 = 20};
             PlatformCoordinates[8] = new Coordinates() { X_1 = 72, Y_1 = 40};
+
+            PlatformCoordinates[9] = new Coordinates() { X_1 = 108, Y_1 = 0 };
+            PlatformCoordinates[10] = new Coordinates() { X_1 = 108, Y_1 = 20 };
+            PlatformCoordinates[11] = new Coordinates() { X_1 = 108, Y_1 = 40 };
+
+            PlatformCoordinates[12] = new Coordinates() { X_1 = 144, Y_1 = 0 };
+            PlatformCoordinates[13] = new Coordinates() { X_1 = 144, Y_1 = 20 };
+            PlatformCoordinates[14] = new Coordinates() { X_1 = 144, Y_1 = 40 };
+
+            PlatformCoordinates[15] = new Coordinates() { X_1 = 180, Y_1 = 0 };
+            PlatformCoordinates[16] = new Coordinates() { X_1 = 180, Y_1 = 20 };
+            PlatformCoordinates[17] = new Coordinates() { X_1 = 180, Y_1 = 40 };
+
+            PlatformCoordinates[18] = new Coordinates() { X_1 = 216, Y_1 = 0 };
+            PlatformCoordinates[19] = new Coordinates() { X_1 = 216, Y_1 = 20 };
+            PlatformCoordinates[20] = new Coordinates() { X_1 = 216, Y_1 = 40 };
+
             #endregion
         }
                     

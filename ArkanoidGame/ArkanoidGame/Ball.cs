@@ -7,7 +7,7 @@ namespace ArkanoidGame
     class Ball : IBall
     {
         #region properities
-        public int m_MaxPlatformY { set; get; } =  Map.m_MapHeight / 4;
+        public int m_MaxPlatformY { set; get; } =  Map.m_MapHeight / 4 + 2;
         public int m_iBallX { set; get; } = 0;
         public int m_iBallY { set; get; } = 0;
 
