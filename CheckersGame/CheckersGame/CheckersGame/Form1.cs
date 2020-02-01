@@ -1,41 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace CheckersGame
 {
-    public partial class Form1 : Form
+    public partial class CheckersForm : Form
     {
-        public Form1()
+        public CheckersForm()
         {
             InitializeComponent();
             Init();
         }
 
         Map GameMap;
+        public Label lbl_Info;
 
         public void Init()
         {
-            this.Height = Map.m_CellSize * Map.m_MapSize + 39;
+            this.Height = Map.m_CellSize * Map.m_MapSize + 80;
             this.Width = Map.m_CellSize * Map.m_MapSize + 16;
             this.MaximumSize = new Size(this.Width, this.Height);
             this.MinimumSize = new Size(this.Width, this.Height);
 
+            lbl_Info = new Label();
+
             GameMap = new Map(this);
+
             Button [,] buttons = GameMap.MapInitButtons();
             for (int i = 0; i < buttons.GetLength(0); ++i)
             {
-                for (int j=0; j< buttons.GetLength(1); ++j)
+                for (int j=0; j < buttons.GetLength(1); ++j)
                 {
                     this.Controls.Add(buttons[i, j]);
                 }
             }
+
+            this.Controls.Add(lbl_Info);
+
         }
     }
 }

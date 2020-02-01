@@ -6,3 +6,4 @@ C:\Users\perce\Desktop\Game\CheckersGame\CheckersGame\CheckersGame\obj\Debug\Che
 C:\Users\perce\Desktop\Game\CheckersGame\CheckersGame\CheckersGame\obj\Debug\CheckersGame.csproj.GenerateResource.cache
 C:\Users\perce\Desktop\Game\CheckersGame\CheckersGame\CheckersGame\obj\Debug\CheckersGame.exe
 C:\Users\perce\Desktop\Game\CheckersGame\CheckersGame\CheckersGame\obj\Debug\CheckersGame.pdb
+C:\Users\perce\Desktop\Game\CheckersGame\CheckersGame\CheckersGame\obj\Debug\CheckersGame.CheckersForm.resources

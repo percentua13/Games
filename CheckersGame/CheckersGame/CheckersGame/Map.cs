@@ -7,7 +7,7 @@ namespace CheckersGame
 {
     class Map
     {
-        Form1 form;
+        CheckersForm form;
 
         public const int m_MapSize = 8;
         public const int m_CellSize = 50;
@@ -24,7 +24,11 @@ namespace CheckersGame
         int m_CountEatSteps = 0;
         bool m_IsContinue;
         private int m_CurrentPlayer;
-        public Map(Form1 form)
+        private Label lbl_Info;
+
+        int m_CountOfEatenFirstCheckers;
+        int m_CountOfEatenSecondCheckers;
+        public Map(CheckersForm form)
         {
             #region
             m_Map = new int[m_MapSize, m_MapSize]
@@ -41,7 +45,16 @@ namespace CheckersGame
             m_CurrentPlayer = 1;
             m_IsMoving = false;
             m_PreviousButton = null;
+            m_CountOfEatenFirstCheckers = m_CountOfEatenSecondCheckers = 0;
+
             this.form = form;
+            lbl_Info = form.lbl_Info;
+
+            lbl_Info.Text = $"1 gamer : {m_CountOfEatenSecondCheckers}             2 gamer : { m_CountOfEatenFirstCheckers}";
+            lbl_Info.Font = new Font("MV Boli", 15);
+            lbl_Info.AutoSize = true;
+            lbl_Info.Location = new Point(0, Map.m_CellSize * Map.m_MapSize + 5);
+
             #endregion
 
         }
@@ -59,6 +72,9 @@ namespace CheckersGame
                     m_Buttons[i, j].Location = new Point(j * m_CellSize, i * m_CellSize);
                     m_Buttons[i, j].Size = new Size(m_CellSize, m_CellSize);
                     m_Buttons[i, j].Click += new EventHandler(OnFigurePress);
+
+                    m_Buttons[i, j].FlatAppearance.BorderSize = 0;
+                    m_Buttons[i, j].FlatStyle = FlatStyle.Flat;
 
                     switch (m_Map[i, j])
                     {
@@ -88,7 +104,7 @@ namespace CheckersGame
             a = b;
             b = temp;
         }
-        private void SwitchPlayer(Form1 form)
+        private void SwitchPlayer(CheckersForm form)
         {
             m_CurrentPlayer = m_CurrentPlayer == 1 ? 2 : 1;
             ResetGame();
@@ -105,10 +121,10 @@ namespace CheckersGame
             {
                 for (int j = 0; j < m_MapSize; ++j)
                 {
-                    if (m_Map[i, j] == 1)
+                    if (m_Map[i, j] == 1 || m_Map[i, j] == 3)
                         player1 = true;
 
-                    if (m_Map[i, j] == 2)
+                    if (m_Map[i, j] == 2 || m_Map[i, j] == 4)
                         player2 = true;
                 }
             }
@@ -172,8 +188,9 @@ namespace CheckersGame
                         j_previous = m_PreviousButton.Location.X / m_CellSize;
 
                     m_IsContinue = false;
-                                    
-                    if (Math.Abs(j_pressed - j_previous) > 1)
+                          
+                    if (m_CountEatSteps >= 1)
+                    //if (Math.Abs(j_pressed - j_previous) > 1)
                     {
                         m_IsContinue = true;
                         DeleteEatenCheckers(m_PressedButton, m_PreviousButton);
@@ -228,9 +245,9 @@ namespace CheckersGame
                 j = m_PreviousButton.Location.X / m_CellSize;
 
             if ((i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0))
-                return (new Figure()).m_Black;
-            else
                 return (new Figure()).m_White;
+            else
+                return (new Figure()).m_Black;
         }
 
         //Highlight all posible steps
@@ -304,6 +321,9 @@ namespace CheckersGame
             //Remove all eaten checkers
             while (CurrentCount < Count - 1)
             {
+                if (m_CurrentPlayer == 1 && m_Map[i, j] != 0) ++m_CountOfEatenSecondCheckers;
+                if (m_CurrentPlayer == 2 && m_Map[i, j] != 0) ++m_CountOfEatenFirstCheckers;
+
                 m_Map[i, j] = 0;
                 m_Buttons[i, j].Image = null;
                 m_Buttons[i, j].Text = "";
@@ -312,6 +332,10 @@ namespace CheckersGame
                 j += StartY;
 
                 ++CurrentCount;
+
+                
+
+                lbl_Info.Text = $"1 gamer : {m_CountOfEatenSecondCheckers}             2 gamer : { m_CountOfEatenFirstCheckers}";
             }
 
         }
@@ -460,7 +484,7 @@ namespace CheckersGame
             //Eaten step
             else if (BiteBack || (!BiteBack && m_Map[ti, tj] != 0))
             {
-                if (m_Map[ti, tj] != m_CurrentPlayer)
+                if (m_Map[ti, tj] != m_CurrentPlayer && m_Map[ti, tj] - 2 != m_CurrentPlayer)
                 {
                     if (m_Map[m_PressedButton.Location.Y/m_CellSize, m_PressedButton.Location.X / m_CellSize] > 2)
                          ShowProceduralEat(ti, tj, false);
@@ -527,9 +551,11 @@ namespace CheckersGame
             int ik = i1 + dirX,
                 jk = j1 + dirY;
 
+            bool CloseSimpleForCurrentChecker = true;
 
             while (IsInsideBorder(ik, jk))
             {
+                
                 //Highlight only empty cells
                 if (m_Map[ik, jk] == 0)
                 {
@@ -537,9 +563,10 @@ namespace CheckersGame
                     if (IsButtonHasEatStep(ik, jk, isOneStep, new int[2] { dirX, dirY }))
                     {
                         CloseSimple = true;
+                        CloseSimpleForCurrentChecker = false;
                     }
                     //Simple step
-                    else
+                    else if (CloseSimpleForCurrentChecker)
                     {
                         toClose.Add(m_Buttons[ik, jk]);
                     }
@@ -587,17 +614,23 @@ namespace CheckersGame
 
                 if (CanCreateStep && IsInsideBorder(i, j))
                 {
-                    if (m_Map[i, j] != 0 && m_Map[i, j] != m_CurrentPlayer)
+                    if (m_Map[i, j] != 0 && (m_Map[i, j] != m_CurrentPlayer && m_Map[i, j] - 2 != m_CurrentPlayer))
                     {
                         EatStep = true;
 
                         //The next isn't at board
                         if (!IsInsideBorder(i - 1, j + 1))
+                        {
                             EatStep = false;
+                            break;
+                        }
                         //The next is not empty -> can't eat
                         else if (m_Map[i - 1, j + 1] != 0)
+                        {
                             EatStep = false;
-                        else 
+                            break;
+                        }
+                        else
                             return EatStep;
                     }
 
@@ -628,16 +661,22 @@ namespace CheckersGame
                 }
                 if (CanCreateStep && IsInsideBorder(i, j))
                 {
-                    if (m_Map[i, j] != 0 && m_Map[i, j] != m_CurrentPlayer)
+                    if (m_Map[i, j] != 0 && (m_Map[i, j] != m_CurrentPlayer && m_Map[i, j] - 2 != m_CurrentPlayer))
                     {
                         EatStep = true;
 
                         //The next isn't at board
                         if (!IsInsideBorder(i - 1, j - 1))
+                        {
                             EatStep = false;
+                            break;
+                        }
                         //The next is not empty -> can't eat
                         else if (m_Map[i - 1, j - 1] != 0)
+                        {
                             EatStep = false;
+                            break;
+                        }
                         else return EatStep;
 
                     }
@@ -668,16 +707,22 @@ namespace CheckersGame
 
                 if (CanCreateStep && IsInsideBorder(i, j))
                 {
-                    if (m_Map[i, j] != 0 && m_Map[i, j] != m_CurrentPlayer)
+                    if (m_Map[i, j] != 0 && (m_Map[i, j] != m_CurrentPlayer && m_Map[i, j] - 2 != m_CurrentPlayer))
                     {
                         EatStep = true;
 
                         //The next isn't at board
                         if (!IsInsideBorder(i + 1, j + 1))
+                        {
                             EatStep = false;
+                            break;
+                        }
                         //The next is not empty -> can't eat
                         else if (m_Map[i + 1, j + 1] != 0)
+                        {
                             EatStep = false;
+                            break;
+                        }
                         else
                             return EatStep;
                     }
@@ -709,18 +754,23 @@ namespace CheckersGame
 
                 if (CanCreateStep && IsInsideBorder(i, j))
                 {
-                    if (m_Map[i, j] != 0 && m_Map[i, j] != m_CurrentPlayer)
+                    if (m_Map[i, j] != 0 && (m_Map[i, j] != m_CurrentPlayer && m_Map[i, j] - 2 != m_CurrentPlayer))
                     {
                         EatStep = true;
 
                         //The next isn't at board
                         if (!IsInsideBorder(i + 1, j - 1))
+                        {
                             EatStep = false;
+                            break;
+                        }
                         //The next is not empty => can't eat
                         else if (m_Map[i + 1, j - 1] != 0)
+                        {
                             EatStep = false;
+                            break;
+                        }
                         else return EatStep;
-
                     }
                     //Move to the next cell (if it's not end of board)
                     if (j > 0) --j;
