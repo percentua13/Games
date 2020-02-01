@@ -50,7 +50,7 @@ namespace CheckersGame
             this.form = form;
             lbl_Info = form.lbl_Info;
 
-            lbl_Info.Text = $"1 gamer : {m_CountOfEatenSecondCheckers}             2 gamer : { m_CountOfEatenFirstCheckers}";
+            lbl_Info.Text = $"1 gamer : {m_CountOfEatenSecondCheckers}              2 gamer : { m_CountOfEatenFirstCheckers}";
             lbl_Info.Font = new Font("MV Boli", 15);
             lbl_Info.AutoSize = true;
             lbl_Info.Location = new Point(0, Map.m_CellSize * Map.m_MapSize + 5);
@@ -333,9 +333,7 @@ namespace CheckersGame
 
                 ++CurrentCount;
 
-                
-
-                lbl_Info.Text = $"1 gamer : {m_CountOfEatenSecondCheckers}             2 gamer : { m_CountOfEatenFirstCheckers}";
+                lbl_Info.Text = $"1 gamer : {m_CountOfEatenSecondCheckers}              2 gamer : { m_CountOfEatenFirstCheckers}";
             }
 
         }
