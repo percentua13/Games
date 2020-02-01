@@ -1,8 +1,7 @@
-﻿using System.Windows.Forms;
-using System.Drawing;
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace CheckersGame
 {
@@ -42,7 +41,6 @@ namespace CheckersGame
             m_CurrentPlayer = 1;
             m_IsMoving = false;
             m_PreviousButton = null;
-
             this.form = form;
             #endregion
 
@@ -97,6 +95,7 @@ namespace CheckersGame
         }
 
 
+        //Check if smb win
         public void ResetGame()
         {
             bool player1 = false;
@@ -116,13 +115,14 @@ namespace CheckersGame
 
             if (!player1 || !player2)
             {
-                if (!player1) MessageBox.Show("Win second player!");
-                else MessageBox.Show("Win first player!");
+                if (!player1) MessageBox.Show("Second player won!");
+                else MessageBox.Show("First player won!");
 
                 form.Controls.Clear();
                 form.Init();
             }
         }
+
         private void OnFigurePress(object sender, EventArgs e)
         {
             m_PressedButton = sender as Button;
@@ -133,26 +133,31 @@ namespace CheckersGame
 
             int i_pressed = m_PressedButton.Location.Y / m_CellSize,
                 j_pressed = m_PressedButton.Location.X / m_CellSize;
-               
 
-            if (m_Map[i_pressed, j_pressed] == m_CurrentPlayer)
+            //Сheck that the player has chosen his checker
+            if ( (m_Map[i_pressed, j_pressed] == m_CurrentPlayer) || (m_Map[i_pressed, j_pressed] - 2 == m_CurrentPlayer) )
             {
+                //Deselect All Checkers
                 CloseSteps();
-                m_PressedButton.BackColor = Color.Red;
-                DeactivateAllButtons();
 
+                //Selected checkers highlight
+                m_PressedButton.BackColor = Color.Red;
+                
+                
+                DeactivateAllButtons();
                 m_PressedButton.Enabled = true;
                 m_CountEatSteps = 0;
 
-                if (m_PressedButton.Text == "D")
-                    ShowSteps(i_pressed, j_pressed, false);
+                //if Queen
+                if (m_Map[i_pressed, j_pressed] > 2)
+                     ShowSteps(i_pressed, j_pressed, false);
                 else
                     ShowSteps(i_pressed, j_pressed);
 
                 if (m_IsMoving)
                 {
                     CloseSteps();
-                    m_PressedButton.BackColor = GetPreviousButtonBackgroundColor(m_PressedButton);
+                    //m_PressedButton.BackColor = GetPreviousButtonBackgroundColor(m_PressedButton);
                     ShowPossibleSteps();
                     m_IsMoving = false;
                 }
@@ -171,7 +176,7 @@ namespace CheckersGame
                     if (Math.Abs(j_pressed - j_previous) > 1)
                     {
                         m_IsContinue = true;
-                        DeleteEaten(m_PressedButton, m_PreviousButton);
+                        DeleteEatenCheckers(m_PressedButton, m_PreviousButton);
                     }
 
                     Swap(ref m_Map[i_pressed, j_pressed], ref m_Map[i_previous, j_previous]);
@@ -189,7 +194,8 @@ namespace CheckersGame
                     CloseSteps();
                     DeactivateAllButtons();
 
-                    if (m_PressedButton.Text == "D")
+                    if (m_Map[i_pressed, j_pressed] > 2)
+                        // if (m_PressedButton.Text == "D")
                         ShowSteps(i_pressed, j_pressed, false);
                     else
                         ShowSteps(i_pressed, j_pressed);
@@ -215,19 +221,19 @@ namespace CheckersGame
 
         }
 
+        //Backlight removal
         private Color GetPreviousButtonBackgroundColor(Button m_PreviousButton)
         {
             int i = m_PreviousButton.Location.Y / m_CellSize,
                 j = m_PreviousButton.Location.X / m_CellSize;
 
             if ((i % 2 != 0 && j % 2 == 0) || (i % 2 == 0 && j % 2 != 0))
-                return (new Figure()).m_White;
-            else
                 return (new Figure()).m_Black;
+            else
+                return (new Figure()).m_White;
         }
 
-
-
+        //Highlight all posible steps
         private void ShowPossibleSteps()
         {
             bool IsOneStep = true;
@@ -239,10 +245,13 @@ namespace CheckersGame
             {
                 for (int j = 0; j < m_MapSize; ++j)
                 {
-                    if (m_Map[i, j] == m_CurrentPlayer)
+                    //Allow only current player's checkers
+                    if ((m_Map[i, j] == m_CurrentPlayer) || (m_Map[i, j] - 2 == m_CurrentPlayer))
                     {
-                        IsOneStep = m_Buttons[i, j].Text == "D" ? false : true;
+                        
+                        IsOneStep = (m_Map[i, j] > 2) ? false : true;
 
+                        //Enable all checkers that have "eaten steps"
                         if (IsButtonHasEatStep(i, j, IsOneStep, new int[2] { 0, 0 }))
                         {
                             IsEatStep = true;
@@ -251,9 +260,11 @@ namespace CheckersGame
                     }
                 }
             }
-
+            //If there are no "eaten steps" => activate all checkers
             if (!IsEatStep) ActivateAllButtons();
         }
+
+        //Check if the current checker is queen
         private void SwitchButtonToCheat(Button button)
         {
             int i = button.Location.Y / m_CellSize,
@@ -261,16 +272,21 @@ namespace CheckersGame
 
             if (m_Map[i,j] == 1 && i == m_MapSize - 1)
             {
-                button.Text = "D";
+                m_Map[i, j] = 3;
+                button.Image = (new Figure()).m_WhiteQueenFigure;
+                //button.Text = "D";
             }
 
             if (m_Map[i, j] == 2 && i == 0)
             {
-                button.Text = "D";
+                m_Map[i, j] = 4;
+                button.Image = (new Figure()).m_BlackQueenFigure;
+                //button.Text = "D";
             }
         }
          
-        private void DeleteEaten(Button EndButton, Button StartButton)
+        //Delete all eaten checkers
+        private void DeleteEatenCheckers(Button EndButton, Button StartButton)
         {
             int Count = Math.Abs(EndButton.Location.Y / m_CellSize - StartButton.Location.Y / m_CellSize);
 
@@ -282,9 +298,10 @@ namespace CheckersGame
 
             int CurrentCount = 0;
 
-            int i = StartButton.Location.Y / m_CellSize + StartX, //!!!
-                j = StartButton.Location.X / m_CellSize + StartY; //!!!
+            int i = StartButton.Location.Y / m_CellSize + StartX, 
+                j = StartButton.Location.X / m_CellSize + StartY; 
 
+            //Remove all eaten checkers
             while (CurrentCount < Count - 1)
             {
                 m_Map[i, j] = 0;
@@ -301,9 +318,13 @@ namespace CheckersGame
 
         private void ShowSteps(int iCurrent, int jCurrent, bool IsOneStep = true)
         {
+            //Clear list of old simple steps
             m_SimpleSteps.Clear();
+
+            //Show all possible steps
             ShowDiagonal(iCurrent, jCurrent, IsOneStep);
 
+            //If there is at least one "eaten step" => disable all simple steps
             if (m_CountEatSteps > 0)
                 CloseSimpleSteps(m_SimpleSteps);
         }
@@ -311,106 +332,138 @@ namespace CheckersGame
 
         private void ShowDiagonal(int iCurrent, int jCurrent, bool IsOneStep = false)
         {
-            #region 1
+            //"White" checkers can walk only down (but allow up eaten step) - 1 long step allow
+            //"Black" checkers - only up (but allow down eaten step) - 1 long step allo
+            //Queens can go up and down, there is no length limit 
+
+            #region 1 Direction: up and right
+
             int j = jCurrent + 1;
 
             for (int i = iCurrent - 1; i >= 0; --i)
             {
-             
                 if (m_CurrentPlayer == 1)
                 {
-                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, true)) break;
+                    //Back step : restrict simple back step but allow "eaten back step"
+                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, true, m_Map[iCurrent, jCurrent] > 2)) break;
                 }
-                else 
-                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, false)) break;
+                else
+                {
+                    //Forward step
+                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, false, m_Map[iCurrent, jCurrent] > 2)) break;
+                }
 
-
-
+                //Move to the next cell (if it's not end of board)
                 if (j < m_MapSize - 1) ++j;
-                else break;
+                else 
+                    break;
 
+                //If it isn't a queen => allow only 1 long step
                 if (IsOneStep) break;
             }
             #endregion
-            #region 2
+
+            #region 2 Direction: up and left
             j = jCurrent - 1;
 
             for (int i = iCurrent - 1; i >= 0; --i)
             {
-                if (m_CurrentPlayer == 1 &&  i < iCurrent-2  && IsOneStep && !m_IsContinue) break;
 
                 if (m_CurrentPlayer == 1)
                 {
-                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, true)) break;
+                    //Back step : restrict simple back step but allow "eaten back step"
+                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, true, m_Map[iCurrent, jCurrent] > 2)) break;
                 }
                 else
-                   if (IsInsideBorder(i, j) && !DeterminePath(i, j, false)) break;
-
-
-                if (j > 0) --j;
-                else break;
-
-                if (IsOneStep) break;
-            }
-            #endregion
-            #region 3
-            j = jCurrent - 1;
-
-            for (int i = iCurrent + 1; i < m_MapSize; ++i)
-            {
-                if (m_CurrentPlayer == 2 && i > iCurrent + 2 && IsOneStep && !m_IsContinue) break;
-
-                if (m_CurrentPlayer == 2)
                 {
-                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, true)) break;
+                    //Forward step
+                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, false, m_Map[iCurrent, jCurrent] > 2)) break;
                 }
-                else
-                   if (IsInsideBorder(i, j) && !DeterminePath(i, j, false)) break;
 
-
+                //Move to the next cell (if it's not end of board)
                 if (j > 0) --j;
                 else break;
 
+                //If it isn't a queen => allow only 1 long step
                 if (IsOneStep) break;
             }
             #endregion
-            #region 4
+
+            #region 3 Direction : down and right
             j = jCurrent + 1;
 
             for (int i = iCurrent + 1; i < m_MapSize; ++i)
             {
-               if (m_CurrentPlayer == 2 && i > iCurrent + 2 && IsOneStep && !m_IsContinue) break;
 
                 if (m_CurrentPlayer == 2)
                 {
-                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, true)) break;
+                    //Back step : restrict simple back step but allow "eaten back step"
+                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, true, m_Map[iCurrent, jCurrent] > 2)) break;
                 }
                 else
-                 if (IsInsideBorder(i, j) && !DeterminePath(i, j, false)) break;
+                {
+                    //Forward step
+                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, false, m_Map[iCurrent, jCurrent] > 2)) break;
+                }
 
+                //Move to the next cell (if it's not end of board)
                 if (j < m_MapSize - 1) ++j;
-                else break;
+                else
+                    break;
 
+                //If it isn't a queen => allow only 1 long step
                 if (IsOneStep) break;
             }
             #endregion
+
+            #region 4 Direction : down and left
+            j = jCurrent - 1;
+
+            for (int i = iCurrent + 1; i < m_MapSize; ++i)
+            {
+
+                if (m_CurrentPlayer == 2)
+                {
+                    //Back step : restrict simple back step but allow "eaten back step"
+                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, true, m_Map[iCurrent, jCurrent] > 2)) break;
+                }
+                else
+                {
+                    //Forward step
+                    if (IsInsideBorder(i, j) && !DeterminePath(i, j, false, m_Map[iCurrent, jCurrent] > 2)) break;
+                }
+
+                //Move to the next cell (if it's not end of board)
+                if (j > 0) --j;
+                else 
+                    break;
+
+                //If it isn't a queen => allow only 1 long step
+                if (IsOneStep) break;
+            }
+            #endregion           
         }
 
 
-        private bool DeterminePath(int ti, int tj, bool BiteBack)
+        //If there is an avaliable step
+        private bool DeterminePath(int ti, int tj, bool BiteBack, bool IsQueen)
         {
-            if (!BiteBack && m_Map[ti, tj] == 0 && !m_IsContinue)
+            //Restrict simple back step (allow "eaten back step")
+
+            //Simple step
+            if ( (IsQueen || !BiteBack) && m_Map[ti, tj] == 0 && !m_IsContinue)
             {
                 m_Buttons[ti, tj].BackColor = Color.Yellow;
                 m_Buttons[ti, tj].Enabled = true;
                 m_SimpleSteps.Add(m_Buttons[ti, tj]);
             }
+            //Eaten step
             else if (BiteBack || (!BiteBack && m_Map[ti, tj] != 0))
             {
                 if (m_Map[ti, tj] != m_CurrentPlayer)
                 {
-                    if (m_PressedButton.Text == "D")
-                        ShowProceduralEat(ti, tj, false);
+                    if (m_Map[m_PressedButton.Location.Y/m_CellSize, m_PressedButton.Location.X / m_CellSize] > 2)
+                         ShowProceduralEat(ti, tj, false);
                     else
                         ShowProceduralEat(ti, tj);
                 }
@@ -419,7 +472,7 @@ namespace CheckersGame
             return true;
         }
 
-
+        //if there is at least one "eaten step" => close all simple("not eaten") steps
         private void CloseSimpleSteps(List<Button> SimpleStep)
         {
             if (SimpleStep.Count > 0)
@@ -432,11 +485,12 @@ namespace CheckersGame
             }
         }
 
+        //Highlight all posible steps
         private void ShowProceduralEat(int i, int j, bool isOneStep = true)
         {
 
-            int dirX = i - m_PressedButton.Location.Y / m_CellSize,
-                dirY = j - m_PressedButton.Location.X / m_CellSize;
+            int dirX = i - m_PressedButton.Location.Y / m_CellSize, 
+                dirY = j - m_PressedButton.Location.X / m_CellSize;  
 
             dirX = dirX < 0 ? -1 : 1;
             dirY = dirY < 0 ? -1 : 1;
@@ -446,6 +500,7 @@ namespace CheckersGame
 
             bool IsEmpty = true;
 
+            //Check if there is an "eaten step"
             while (IsInsideBorder(i1, j1))
             {
                 if (m_Map[i1, j1] != 0 && m_Map[i1, j1] != m_CurrentPlayer)
@@ -457,12 +512,14 @@ namespace CheckersGame
                 i1 += dirX;
                 j1 += dirY;
 
+                //If isn't queen => allow 1 long step
                 if (isOneStep) break;
             }
 
-            //Exit
+            //No "eaten" steps
             if (IsEmpty) return;
 
+            //All "simple steps" that need to be disabled
             List<Button> toClose = new List<Button>();
 
             bool CloseSimple = false;
@@ -470,18 +527,23 @@ namespace CheckersGame
             int ik = i1 + dirX,
                 jk = j1 + dirY;
 
+
             while (IsInsideBorder(ik, jk))
             {
+                //Highlight only empty cells
                 if (m_Map[ik, jk] == 0)
                 {
+                    //If we have at least one "eaten step" => all simple steps need to be disabled
                     if (IsButtonHasEatStep(ik, jk, isOneStep, new int[2] { dirX, dirY }))
                     {
                         CloseSimple = true;
                     }
+                    //Simple step
                     else
                     {
                         toClose.Add(m_Buttons[ik, jk]);
                     }
+                    
                     m_Buttons[ik, jk].BackColor = Color.Yellow;
                     m_Buttons[ik, jk].Enabled = true;
                     ++m_CountEatSteps;
@@ -489,12 +551,14 @@ namespace CheckersGame
                 else 
                     break;
 
+                //If isn't queen => allow 1 long step
                 if (isOneStep) break;
 
                 ik += dirX;
                 jk += dirY;
             }
 
+            //If there are "eaten steps" => delete all "simple steps"
             if (CloseSimple && toClose.Count > 0)
             {
                 CloseSimpleSteps(toClose);
@@ -505,152 +569,165 @@ namespace CheckersGame
         {
             bool EatStep = false;
 
-            #region 1
-            //Вверх по диагонали
+            #region 1 Direction: up and right
+
+
             int j = jCurrent + 1;
 
-            //Вниз по диагонали
             for (int i = iCurrent - 1; i >= 0; --i)
             {
-                //Не дамка и нет продолжения ходу
+                bool CanCreateStep = true;
 
-
-                //Не дамка -> только вниз ходят (ограничение по ходу вверх)
-                bool flag = true;
+                //Allow step back for current checker (to check if there is an "eaten step")                              
                 if (direction[0] == 1 && direction[1] == -1 && !isOneStep)
                 {  
                     if (i < iCurrent - 2) break;
-                    if (i == iCurrent - 1) flag = false;
+                    if (i == iCurrent - 1) CanCreateStep = false;
                 }
 
-                if (flag && IsInsideBorder(i, j))
+                if (CanCreateStep && IsInsideBorder(i, j))
                 {
                     if (m_Map[i, j] != 0 && m_Map[i, j] != m_CurrentPlayer)
                     {
                         EatStep = true;
 
+                        //The next isn't at board
                         if (!IsInsideBorder(i - 1, j + 1))
                             EatStep = false;
-                        //Следующая не нулевая -> не можем съесть
+                        //The next is not empty -> can't eat
                         else if (m_Map[i - 1, j + 1] != 0)
                             EatStep = false;
                         else 
                             return EatStep;
-
                     }
 
+                    //Move to the next cell (if it's not end of board)
                     if (j < m_MapSize - 1) ++j;
-                    else break;
+                    else 
+                        break;
 
+                    //If it isn't a queen => allow only 1 long step
                     if (isOneStep) break;
                 }
             }
             #endregion
 
-            #region 2
+            #region 2 Direction: up and left
+
             j = jCurrent - 1;
 
             for (int i = iCurrent - 1; i >= 0; --i)
             {
-                //Не дамка -> только вниз ходят (ограничение по ходу вверх)
-                bool flag = true;
+                bool CanCreateStep = true;
+
+                //Allow step back for current checker (to check if there is an "eaten step") 
                 if (direction[0] == 1 && direction[1] == 1 && !isOneStep) 
                 {
                     if (i < iCurrent - 2) break;
-                    if (i == iCurrent - 1) flag = false;
+                    if (i == iCurrent - 1) CanCreateStep = false;
                 }
-                if (flag && IsInsideBorder(i, j))
+                if (CanCreateStep && IsInsideBorder(i, j))
                 {
                     if (m_Map[i, j] != 0 && m_Map[i, j] != m_CurrentPlayer)
                     {
                         EatStep = true;
 
+                        //The next isn't at board
                         if (!IsInsideBorder(i - 1, j - 1))
                             EatStep = false;
-                        //Следующая не нулевая -> не можем съесть
+                        //The next is not empty -> can't eat
                         else if (m_Map[i - 1, j - 1] != 0)
                             EatStep = false;
                         else return EatStep;
 
                     }
 
+                    //Move to the next cell (if it's not end of board)
                     if (j > 0) --j;
                     else break;
 
+                    //If it isn't a queen => allow only 1 long step
                     if (isOneStep) break;
                 }
             }
             #endregion
 
-            #region 3
-            j = jCurrent - 1;
+            #region 3 Direction: down and right
+            j = jCurrent + 1;
 
             for (int i = iCurrent + 1; i < m_MapSize; ++i)
             {
-                //Не дамка -> только вниз ходят (ограничение по ходу вверх)
-                bool flag = true;
-                if (direction[0] == -1 && direction[1] == 1 && !isOneStep) 
+                bool CanCreateStep = true;
+
+                //Allow step back for current checker (to check if there is an "eaten step") 
+                if (direction[0] == -1 && direction[1] == -1 && !isOneStep)
                 {
                     if (i > iCurrent + 2) break;
-                    if (i == iCurrent + 2) flag = false;
+                    if (i == iCurrent + 2) CanCreateStep = false;
                 }
 
-                if (flag && IsInsideBorder(i, j))
+                if (CanCreateStep && IsInsideBorder(i, j))
                 {
                     if (m_Map[i, j] != 0 && m_Map[i, j] != m_CurrentPlayer)
                     {
                         EatStep = true;
 
+                        //The next isn't at board
+                        if (!IsInsideBorder(i + 1, j + 1))
+                            EatStep = false;
+                        //The next is not empty -> can't eat
+                        else if (m_Map[i + 1, j + 1] != 0)
+                            EatStep = false;
+                        else
+                            return EatStep;
+                    }
+
+                    //Move to the next cell (if it's not end of board)
+                    if (j < m_MapSize - 1) ++j;
+                    else
+                        break;
+
+                    //If it isn't a queen => allow only 1 long step
+                    if (isOneStep) break;
+                }
+            }
+            #endregion
+
+            #region 4 Direction: down and left
+            j = jCurrent - 1;
+
+            for (int i = iCurrent + 1; i < m_MapSize; ++i)
+            {              
+                bool CanCreateStep = true;
+
+                //Allow step back for current checker (to check if there is an "eaten step") 
+                if (direction[0] == -1 && direction[1] == 1 && !isOneStep) 
+                {
+                    if (i > iCurrent + 2) break;
+                    if (i == iCurrent + 2) CanCreateStep = false;
+                }
+
+                if (CanCreateStep && IsInsideBorder(i, j))
+                {
+                    if (m_Map[i, j] != 0 && m_Map[i, j] != m_CurrentPlayer)
+                    {
+                        EatStep = true;
+
+                        //The next isn't at board
                         if (!IsInsideBorder(i + 1, j - 1))
                             EatStep = false;
-                        //Следующая не нулевая -> не можем съесть
+                        //The next is not empty => can't eat
                         else if (m_Map[i + 1, j - 1] != 0)
                             EatStep = false;
                         else return EatStep;
 
                     }
-
+                    //Move to the next cell (if it's not end of board)
                     if (j > 0) --j;
-                    else break;
-
-                    if (isOneStep) break;
-                }
-            }
-            #endregion
-
-            #region 4
-            j = jCurrent + 1;
-
-            for (int i = iCurrent + 1; i < m_MapSize; ++i)
-            {
-
-                //Не дамка -> только вниз ходят (ограничение по ходу вверх)
-                bool flag = true;
-                if (direction[0] == -1 && direction[1] == -1 && !isOneStep)
-                {
-                    if (i > iCurrent + 2) break;
-                    if (i == iCurrent + 2) flag = false;
-                }
-
-                if (flag && IsInsideBorder(i, j))
-                {
-                    if (m_Map[i, j] != 0 && m_Map[i, j] != m_CurrentPlayer)
-                    {
-                        EatStep = true;
-
-                        if (!IsInsideBorder(i + 1, j + 1))
-                            EatStep = false;
-                        //Следующая не нулевая -> не можем съесть
-                        else if (m_Map[i + 1, j + 1] != 0)
-                            EatStep = false;
-                        else 
-                            return EatStep;
-                    }
-
-                    if (j < m_MapSize - 1) ++j;
                     else 
                         break;
 
+                    //If it isn't a queen => allow only 1 long step
                     if (isOneStep) break;
                 }
             }
@@ -659,8 +736,10 @@ namespace CheckersGame
             return EatStep;
         }
 
+        //Deselect All Checkers (Set property Background)
         private void CloseSteps()
         {
+            #region
             for (int i = 0; i < m_MapSize; ++i)
             {
                 for (int j = 0; j < m_MapSize; ++j)
@@ -668,6 +747,7 @@ namespace CheckersGame
                     m_Buttons[i, j].BackColor = GetPreviousButtonBackgroundColor(m_Buttons[i, j]);
                 }
             }
+            #endregion
         }
 
         private bool IsInsideBorder(int i, int j)
