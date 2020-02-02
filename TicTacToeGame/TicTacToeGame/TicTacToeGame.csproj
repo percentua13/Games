@@ -53,7 +53,9 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Game.cs" />
-    <Compile Include="GameProcess.cs" />
+    <Compile Include="GameProcessAbstract.cs" />
+    <Compile Include="GameProcessSimple.cs" />
+    <Compile Include="GameProcessWithBot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

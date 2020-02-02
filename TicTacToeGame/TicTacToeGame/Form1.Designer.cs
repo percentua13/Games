@@ -1,6 +1,6 @@
 ﻿namespace TicTacToeGame
 {
-    partial class Form1
+    partial class TicTacToe
     {
         /// <summary>
         /// Required designer variable.
@@ -28,15 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TicTacToe));
             this.SuspendLayout();
             // 
-            // Form1
+            // TicTacToe
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "TicTacToe";
+            this.Text = "Tic Tac Toe";
             this.ResumeLayout(false);
 
         }

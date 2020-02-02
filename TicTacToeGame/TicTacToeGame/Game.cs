@@ -7,43 +7,50 @@ namespace TicTacToeGame
 {
     class Game
     {
-        Form1 form;
-        GameProcess game;
+        TicTacToe form;
+        GameProcessAbstract game = new GameProcessSimple();
 
-        public void StartNewGame(Form1 form)
+        public void StartNewGame(TicTacToe form)
         {
             Initialization(form);
         }
-        public void Initialization(Form1 form)
+        public void Initialization(TicTacToe form)
         {
             this.form = form;
             form.Controls.Clear();
 
             MenuStrip menu = new MenuStrip();
             Panel panel = new Panel();
+
             form.Controls.Add(menu);
             form.Controls.Add(panel);
 
 
             SetPanelProperities(panel);
             SetMenuProperities(menu);
-            game = new GameProcess(panel);
+
+            panel.Location = new Point(0, menu.Height);
+
+            game.StartNewGameProcess(panel);
 
 
-            form.Size = new Size(panel.Width, panel.Height + menu.Height);
+            form.Size = new Size(panel.Width, panel.Height + menu.Height - 1);
             form.MinimumSize = form.MaximumSize = form.Size;
         }
         private void SetPanelProperities(Panel panel)
         {
-            panel.Size = new Size(GameProcess.m_MapSize * GameProcess.m_CellSize + 16, GameProcess.m_MapSize * GameProcess.m_CellSize + 40);
+            panel.Size = new Size(GameProcessAbstract.m_MapSize * GameProcessAbstract.m_CellSize + 16, GameProcessAbstract.m_MapSize * GameProcessAbstract.m_CellSize + 40);
             panel.MinimumSize = panel.MaximumSize = panel.Size;
             panel.Location = new Point(0, 25);
         }
 
         private void SetMenuProperities(MenuStrip menu)
         {
-            menu.Size = new Size(GameProcess.m_MapSize * GameProcess.m_CellSize + 16, 10);
+            menu.Size = new Size(GameProcessAbstract.m_MapSize * GameProcessAbstract.m_CellSize + 16, 25);
             menu.MinimumSize = menu.MaximumSize = menu.Size;
+
+            menu.Font = new Font("OCR A", 12, GraphicsUnit.Pixel);
+
 
             ToolStripMenuItem NewGameItem = new ToolStripMenuItem("Start new game");
 
@@ -53,13 +60,24 @@ namespace TicTacToeGame
             menu.Items.Add(NewGameBotItem);
 
             NewGameItem.Click += OnMenuClick;
-            
+            NewGameBotItem.Click += OnMenuClick2;
+
+            menu.Location = new Point(0, 0);
+            menu.BackColor = Color.White;
+            menu.AutoSize = true;
         }
 
         private void OnMenuClick(object sender, EventArgs e)
         {
-                StartNewGame(form);
+            game = new GameProcessSimple();
+            StartNewGame(form);
         }
-     
+
+        private void OnMenuClick2(object sender, EventArgs e)
+        {
+            game = new GameProcessWithBot();
+            StartNewGame(form);
+        }
+
     }
 }

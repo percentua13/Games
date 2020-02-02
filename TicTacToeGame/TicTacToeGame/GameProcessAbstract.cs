@@ -4,20 +4,20 @@ using System.Windows.Forms;
 
 namespace TicTacToeGame
 {
-    class GameProcess
+    abstract class GameProcessAbstract
     {
         public const int m_MapSize = 3;
         public const int m_CellSize = 100;
-        int[,] m_Map;
-        Button[,] m_Buttons;
-        int m_Player;
+        protected int[,] m_Map;
+        protected Button[,] m_Buttons;
+        protected int m_Player;
 
-        public GameProcess(Panel panel)
+        public virtual void StartNewGameProcess(Panel panel)
         {
             InitializationGameProcess(panel);
         }
 
-        private void InitializationGameProcess(Panel panel)
+        virtual protected void InitializationGameProcess(Panel panel)
         {
             m_Map = new int[m_MapSize, m_MapSize];
             m_Buttons = new Button[m_MapSize, m_MapSize];
@@ -36,7 +36,8 @@ namespace TicTacToeGame
                 }
             }
         }
-        private void SetButtonProperity(Button button)
+        
+        protected void SetButtonProperity(Button button)
         {
             button.Size = new Size(m_CellSize, m_CellSize);
 
@@ -45,19 +46,16 @@ namespace TicTacToeGame
 
             button.BackColor = Color.White;
             button.Font = new Font(FontFamily.GenericMonospace, 50, FontStyle.Bold, GraphicsUnit.Pixel);
-            // m_Buttons[i, j].FlatAppearance.MouseDownBackColor = Color.Yellow;
-            button.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 255, 187);
+
+            button.FlatAppearance.MouseOverBackColor = Color.FromArgb(219, 253, 206);
             button.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 200, 0);
 
 
-            //m_Buttons[i, j].Cl
             button.Click += new EventHandler(OnCellPressed);
 
         }
 
-
-
-        private void BlockAllNotEmptyCells()
+        protected void BlockAllNotEmptyCells()
         {
             for (int i = 0; i < m_MapSize; ++i)
             {
@@ -69,7 +67,7 @@ namespace TicTacToeGame
             }
         }
 
-        private void BlockAllCells()
+        protected void BlockAllCells()
         {
             for (int i = 0; i < m_MapSize; ++i)
             {
@@ -80,44 +78,14 @@ namespace TicTacToeGame
             }
         }
 
-        private void SwitchPlayer()
+        protected void SwitchPlayer()
         {
             m_Player = m_Player == 1 ? 2 : 1;
         }
 
-        private void OnCellPressed(object sender, EventArgs e)
-        {
-            Button button = sender as Button;
-
-            switch (m_Player)
-            {
-                case 1:
-                    button.Text = "X";
-                    m_Map[button.Location.Y / m_CellSize, button.Location.X / m_CellSize] = 1;
-                    SwitchPlayer();
-                    break;
-
-                case 2:
-                    button.Text = "O";
-                    m_Map[button.Location.Y / m_CellSize, button.Location.X / m_CellSize] = 2;
-                    SwitchPlayer();
-                    break;
-            }
-
-            BlockAllNotEmptyCells();
-
-            int Winner = WhoIsWin();
-            if (Winner == 0) return;
-            BlockAllCells();
-            if (Winner == -1)
-                MessageBox.Show("Draw!");
-            else
-                MessageBox.Show($"{Winner} player has won! c:");
-
-
-        }
-
-        int WhoIsWin()
+        public abstract void OnCellPressed(object sender, EventArgs e);
+       
+        protected int WhoIsWin()
         {
             #region
             int[] CounterForFirstPlayer = new int[4];
@@ -200,26 +168,26 @@ namespace TicTacToeGame
             //1 - collumns
             //2 - main diagonal
             //3 - second diagonal
-
+            Color ColorWin = Color.FromArgb(254, 180, 180);
             switch (NumberOfCase)
             {
                 case 0:
                     for (int j = 0; j < m_MapSize; ++j)
-                        m_Buttons[StartIndex, j].BackColor = Color.Red;
+                        m_Buttons[StartIndex, j].BackColor = ColorWin;
                     break;
                 case 1:
                     for (int i = 0; i < m_MapSize; ++i)
-                        m_Buttons[i, StartIndex].BackColor = Color.Red;
+                        m_Buttons[i, StartIndex].BackColor = ColorWin;
                     break;
                 case 2:
                     for (int i = 0; i < m_MapSize; ++i)
-                        m_Buttons[i, i].BackColor = Color.Red;
+                        m_Buttons[i, i].BackColor = ColorWin;
                     break;
                 case 3:
                     for (int i = 0; i < m_MapSize; ++i)
-                        m_Buttons[i, m_MapSize - i - 1].BackColor = Color.Red;
+                        m_Buttons[i, m_MapSize - i - 1].BackColor = ColorWin;
                     break;
             }
         }
-}
+    }
 }
