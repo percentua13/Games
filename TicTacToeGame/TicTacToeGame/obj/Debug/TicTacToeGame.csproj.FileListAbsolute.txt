@@ -1,0 +1,8 @@
+C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\bin\Debug\TicTacToeGame.exe.config
+C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\bin\Debug\TicTacToeGame.exe
+C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\bin\Debug\TicTacToeGame.pdb
+C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\obj\Debug\TicTacToeGame.csprojAssemblyReference.cache
+C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\obj\Debug\TicTacToeGame.Properties.Resources.resources
+C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\obj\Debug\TicTacToeGame.csproj.GenerateResource.cache
+C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\obj\Debug\TicTacToeGame.exe
+C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\obj\Debug\TicTacToeGame.pdb

@@ -16,10 +16,8 @@ namespace CheckersGame
 
         public void Init()
         {
-            this.Height = Map.m_CellSize * Map.m_MapSize + 80;
-            this.Width = Map.m_CellSize * Map.m_MapSize + 16;
-            this.MaximumSize = new Size(this.Width, this.Height);
-            this.MinimumSize = new Size(this.Width, this.Height);
+            this.Size = new Size(Map.m_CellSize * Map.m_MapSize + 16, Map.m_CellSize * Map.m_MapSize + 80);
+            this.MinimumSize = this.MaximumSize = this.Size;
 
             lbl_Info = new Label();
 
