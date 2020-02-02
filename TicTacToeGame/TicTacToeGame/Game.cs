@@ -7,147 +7,59 @@ namespace TicTacToeGame
 {
     class Game
     {
-        public const int m_MapSize = 3;
-        public const int m_CellSize = 100;
-        int[,] m_Map;
-        Button[,] m_Buttons;
-        int m_Player;
-        public Game(Form1 form)
+        Form1 form;
+        GameProcess game;
+
+        public void StartNewGame(Form1 form)
         {
             Initialization(form);
         }
-
-        private void SetButtonProperity(Button button)
-        {
-            button.Size = new Size(m_CellSize, m_CellSize);
-
-            button.FlatAppearance.BorderSize = 1;
-            button.FlatStyle = FlatStyle.Flat;
-
-            button.BackColor = Color.White;
-            button.Font = new Font(FontFamily.GenericMonospace, 50, FontStyle.Bold, GraphicsUnit.Pixel);
-            // m_Buttons[i, j].FlatAppearance.MouseDownBackColor = Color.Yellow;
-            button.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 255, 187);
-            button.FlatAppearance.MouseDownBackColor = Color.FromArgb(0, 200, 0);
-
-
-            //m_Buttons[i, j].Cl
-            button.Click += new EventHandler(OnCellPressed);
-
-        }
         public void Initialization(Form1 form)
         {
-            m_Map = new int[m_MapSize, m_MapSize];
-            m_Buttons = new Button[m_MapSize, m_MapSize];
-            m_Player = 1;
+            this.form = form;
+            form.Controls.Clear();
 
-            for (int i = 0; i < m_MapSize; ++i)
-            {
-                for (int j = 0; j < m_MapSize; ++j)
-                {
-                    m_Buttons[i, j] = new Button();
-                    m_Buttons[i, j].Location = new Point(j * m_CellSize, i * m_CellSize);
+            MenuStrip menu = new MenuStrip();
+            Panel panel = new Panel();
+            form.Controls.Add(menu);
+            form.Controls.Add(panel);
 
-                    SetButtonProperity(m_Buttons[i, j]);
 
-                    form.Controls.Add(m_Buttons[i, j]);
-                }
-            }
+            SetPanelProperities(panel);
+            SetMenuProperities(menu);
+            game = new GameProcess(panel);
 
-            form.Size = new Size(m_MapSize * m_CellSize + 16, m_MapSize * m_CellSize + 40);
+
+            form.Size = new Size(panel.Width, panel.Height + menu.Height);
             form.MinimumSize = form.MaximumSize = form.Size;
-            form.ActiveControl = null;
-
         }
-
-
-        private void BlockAllNotEmptyCells()
+        private void SetPanelProperities(Panel panel)
         {
-            for (int i = 0; i < m_MapSize; ++i)
-            {
-                for (int j = 0; j < m_MapSize; ++j)
-                {
-                    if (m_Buttons[i, j].Text != "")
-                        m_Buttons[i, j].Enabled = false;
-                }
-            }
+            panel.Size = new Size(GameProcess.m_MapSize * GameProcess.m_CellSize + 16, GameProcess.m_MapSize * GameProcess.m_CellSize + 40);
+            panel.MinimumSize = panel.MaximumSize = panel.Size;
+            panel.Location = new Point(0, 25);
         }
 
-        private void SwitchPlayer() 
+        private void SetMenuProperities(MenuStrip menu)
         {
-            m_Player = m_Player == 1 ? 2 : 1;
-        }
-        private void OnCellPressed(object sender, EventArgs e)
-        {         
-            Button button = sender as Button;
+            menu.Size = new Size(GameProcess.m_MapSize * GameProcess.m_CellSize + 16, 10);
+            menu.MinimumSize = menu.MaximumSize = menu.Size;
 
-            switch (m_Player)
-            {
-                case 1 :
-                    button.Text = "X";
-                    m_Map[button.Location.Y / m_CellSize, button.Location.X / m_CellSize] = 1;
-                    SwitchPlayer();
-                    break;
+            ToolStripMenuItem NewGameItem = new ToolStripMenuItem("Start new game");
 
-                case 2 :
-                    button.Text = "O";
-                    m_Map[button.Location.Y / m_CellSize, button.Location.X / m_CellSize] = 2;
-                    SwitchPlayer();
-                    break;
-            }
+            ToolStripMenuItem NewGameBotItem = new ToolStripMenuItem("Start new game with bot");
 
-            BlockAllNotEmptyCells();
+            menu.Items.Add(NewGameItem);
+            menu.Items.Add(NewGameBotItem);
+
+            NewGameItem.Click += OnMenuClick;
+            
         }
 
-        int WhoIsWin()
+        private void OnMenuClick(object sender, EventArgs e)
         {
-            int[] CounterForFirstPlayer = new int[4];
-            int[] CounterForSecondPlayer = new int[4];
-
-
-            for (int i = 0; i < m_MapSize; ++i)
-            {
-
-                for (int j = 0; j < m_MapSize; ++j)
-                {
-                    //Check rows
-                    if (m_Map[i, j] == 1) ++CounterForFirstPlayer[0];                  
-                    if (m_Map[i, j] == 2) ++CounterForSecondPlayer[0];
-
-                    //Check columns
-                    if (m_Map[j, i] == 1) ++CounterForFirstPlayer[1];
-                    if (m_Map[j, i] == 2) ++CounterForSecondPlayer[1];
-
-                }
-
-                //Check main diagonal elements              
-                if (m_Map[i, i] == 1) ++CounterForFirstPlayer[2];
-                if (m_Map[i, i] == 2) ++CounterForSecondPlayer[2];
-
-                //Check second diagonal elements
-                if (m_Map[i, m_MapSize - i - 1] == 1) ++CounterForFirstPlayer[3];
-                if (m_Map[i, m_MapSize - i - 1] == 2) ++CounterForSecondPlayer[3];
-
-                
-                if (CounterForFirstPlayer[0] == m_MapSize || CounterForFirstPlayer[1] == m_MapSize) 
-                    return 1;
-               
-                if (CounterForSecondPlayer[0] == m_MapSize || CounterForSecondPlayer[1] == m_MapSize) 
-                    return 2;
-
-                //Clear data for Rows and Columns
-                for (int k = 0; k < 2; ++k)
-                {
-                    if (CounterForFirstPlayer[k] == m_MapSize)
-                        return 1;
-
-                    if (CounterForSecondPlayer[k] == m_MapSize)
-                        return 2;
-                    CounterForFirstPlayer[k] = CounterForSecondPlayer[k] = 0;
-                }
-             
-            }
+                StartNewGame(form);
         }
-
+     
     }
 }

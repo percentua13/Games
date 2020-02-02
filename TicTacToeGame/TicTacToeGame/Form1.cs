@@ -16,7 +16,11 @@ namespace TicTacToeGame
         {
             InitializeComponent();
 
-            Game game = new Game(this);
+           Game game = new Game();
+
+           game.StartNewGame(this);
         }
+
+
     }
 }

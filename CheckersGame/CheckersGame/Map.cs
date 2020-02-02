@@ -111,7 +111,7 @@ namespace CheckersGame
         }
 
 
-        //Check if smb win
+        //Check if someome has won
         public void ResetGame()
         {
             bool player1 = false;
@@ -190,7 +190,6 @@ namespace CheckersGame
                     m_IsContinue = false;
                           
                     if (m_CountEatSteps >= 1)
-                    //if (Math.Abs(j_pressed - j_previous) > 1)
                     {
                         m_IsContinue = true;
                         DeleteEatenCheckers(m_PressedButton, m_PreviousButton);
@@ -212,7 +211,6 @@ namespace CheckersGame
                     DeactivateAllButtons();
 
                     if (m_Map[i_pressed, j_pressed] > 2)
-                        // if (m_PressedButton.Text == "D")
                         ShowSteps(i_pressed, j_pressed, false);
                     else
                         ShowSteps(i_pressed, j_pressed);

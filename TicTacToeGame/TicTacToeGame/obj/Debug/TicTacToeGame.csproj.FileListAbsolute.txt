@@ -6,3 +6,4 @@ C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\obj\Debug\TicTacToeGame.
 C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\obj\Debug\TicTacToeGame.csproj.GenerateResource.cache
 C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\obj\Debug\TicTacToeGame.exe
 C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\obj\Debug\TicTacToeGame.pdb
+C:\Users\perce\Desktop\Game\TicTacToeGame\TicTacToeGame\obj\Debug\TicTacToeGame.Form1.resources
