@@ -263,7 +263,7 @@ namespace CheckersGame
                     //Allow only current player's checkers
                     if ((m_Map[i, j] == m_CurrentPlayer) || (m_Map[i, j] - 2 == m_CurrentPlayer))
                     {
-                        
+                        //queen
                         IsOneStep = (m_Map[i, j] > 2) ? false : true;
 
                         //Enable all checkers that have "eaten steps"
@@ -289,14 +289,13 @@ namespace CheckersGame
             {
                 m_Map[i, j] = 3;
                 button.Image = (new Figure()).m_WhiteQueenFigure;
-                //button.Text = "D";
             }
 
             if (m_Map[i, j] == 2 && i == 0)
             {
                 m_Map[i, j] = 4;
                 button.Image = (new Figure()).m_BlackQueenFigure;
-                //button.Text = "D";
+
             }
         }
          
