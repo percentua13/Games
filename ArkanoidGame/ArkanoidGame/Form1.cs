@@ -9,11 +9,8 @@ namespace ArkanoidGame
     {
         public ArkanoidForm()
         {
-            #region
             InitializeComponent();
-
             GameInitialization();
-            #endregion
         }
 
         static class PassedTime
