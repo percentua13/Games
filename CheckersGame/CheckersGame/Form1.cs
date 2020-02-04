@@ -23,15 +23,6 @@ namespace CheckersGame
 
             GameMap = new Map(this);
 
-            Button [,] buttons = GameMap.MapInitButtons();
-            for (int i = 0; i < buttons.GetLength(0); ++i)
-            {
-                for (int j=0; j < buttons.GetLength(1); ++j)
-                {
-                    this.Controls.Add(buttons[i, j]);
-                }
-            }
-
             this.Controls.Add(lbl_Info);
 
         }

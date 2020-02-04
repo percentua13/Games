@@ -7,14 +7,15 @@ namespace CheckersGame
 {
     class Map
     {
+        #region fields
         CheckersForm form;
 
         public const int m_MapSize = 8;
         public const int m_CellSize = 50;
-        private int[,] m_Map;
-        private Button[,] m_Buttons;
+        int[,] m_Map;
+        Button[,] m_Buttons;
 
-        private Button m_PreviousButton = null;
+        Button m_PreviousButton = null;
         Button m_PressedButton = null;
 
         bool m_IsMoving;
@@ -23,11 +24,12 @@ namespace CheckersGame
 
         int m_CountEatSteps = 0;
         bool m_IsContinue;
-        private int m_CurrentPlayer;
-        private Label lbl_Info;
+        int m_CurrentPlayer;
+        Label lbl_Info;
 
         int m_CountOfEatenFirstCheckers;
         int m_CountOfEatenSecondCheckers;
+        #endregion
         public Map(CheckersForm form)
         {
             #region
@@ -55,11 +57,11 @@ namespace CheckersGame
             lbl_Info.AutoSize = true;
             lbl_Info.Location = new Point(0, Map.m_CellSize * Map.m_MapSize + 5);
 
+            MapInitButtons();
             #endregion
-
         }
 
-        public Button[,] MapInitButtons()
+        private void MapInitButtons()
         {
             #region
             m_Buttons = new Button[m_MapSize, m_MapSize];
@@ -68,7 +70,10 @@ namespace CheckersGame
             {
                 for (int j = 0; j < m_MapSize; ++j)
                 {
+                    #region Set button properities
                     m_Buttons[i, j] = new Button();
+                    form.Controls.Add(m_Buttons[i, j]);
+
                     m_Buttons[i, j].Location = new Point(j * m_CellSize, i * m_CellSize);
                     m_Buttons[i, j].Size = new Size(m_CellSize, m_CellSize);
                     m_Buttons[i, j].Click += new EventHandler(OnFigurePress);
@@ -90,14 +95,11 @@ namespace CheckersGame
                         m_Buttons[i, j].BackColor = (new Figure()).m_White;
                     else
                         m_Buttons[i, j].BackColor = (new Figure()).m_Black;
-
+                    #endregion
                 }
             }
-
-            return m_Buttons;
             #endregion
         }
-
         private void Swap<T>(ref T a, ref T b)
         {
             T temp = a;
@@ -112,7 +114,7 @@ namespace CheckersGame
 
 
         //Check if someome has won
-        public void ResetGame()
+        private void ResetGame()
         {
             bool player1 = false;
             bool player2 = false;
@@ -348,7 +350,6 @@ namespace CheckersGame
                 CloseSimpleSteps(m_SimpleSteps);
         }
 
-
         private void ShowDiagonal(int iCurrent, int jCurrent, bool IsOneStep = false)
         {
             //"White" checkers can walk only down (but allow up eaten step) - 1 long step allow
@@ -462,7 +463,6 @@ namespace CheckersGame
             }
             #endregion           
         }
-
 
         //If there is an avaliable step
         private bool DeterminePath(int ti, int tj, bool BiteBack, bool IsQueen)
