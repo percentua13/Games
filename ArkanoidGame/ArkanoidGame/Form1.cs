@@ -16,7 +16,6 @@ namespace ArkanoidGame
             #endregion
         }
 
-
         static class PassedTime
         {
             #region
