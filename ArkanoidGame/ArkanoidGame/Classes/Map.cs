@@ -69,7 +69,7 @@ namespace ArkanoidGame
             ClearGame();
             GeneratePlatforms();
 
-            m_GameBall.SetInitProperities(m_ArkanoidSet);
+            m_GameBall.SetInitialProperities(m_ArkanoidSet);
 
             m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX] = (int)ENUM_Properities.SET1;
             m_Map[m_ArkanoidSet.m_iSetY, m_ArkanoidSet.m_iSetX + 1] = (int)ENUM_Properities.SET2;

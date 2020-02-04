@@ -15,6 +15,6 @@ namespace ArkanoidGame.Interfaces
         public Image m_ArkanoidBall { set; get; }
         #endregion
 
-        public void SetInitProperities(Set set);
+        public void SetInitialProperities(Set set);
     }
 }

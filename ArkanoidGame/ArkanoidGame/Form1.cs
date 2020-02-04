@@ -22,6 +22,22 @@ namespace ArkanoidGame
             static public int seconds {get; set;} = 0;
             static public int minutes { get; set; } = 0;
             static public int hours { get; set; } = 0;
+            static public string Tick()
+            {
+                ++PassedTime.seconds;
+
+                PassedTime.minutes += PassedTime.seconds / 60;
+                PassedTime.hours += PassedTime.minutes / 60;
+                PassedTime.minutes %= 60;
+                PassedTime.seconds %= 60;
+
+                return String.Format("Time : {0:D2}:{1:D2}:{2:D2}", PassedTime.hours, PassedTime.minutes, PassedTime.seconds);
+            }
+
+            static public string StartTime()
+            {
+                return "Time : 00:00:00";
+            }
             #endregion
         }
 
@@ -31,42 +47,39 @@ namespace ArkanoidGame
         Label lbl_Score;
         #endregion
 
+        #region Create labels
         private void CreateLabel(out Label label)
         {
-            #region
             label = new Label();
             label.Font = new Font("MV Boli", 10);
             label.AutoSize = true;
             this.Controls.Add(label);
-            #endregion
         }
-
+        private void CreateScoreLabel(out Label label)
+        {
+            CreateLabel(out label);
+            lbl_Score.Location = new Point((int)ENUM_Properities.LEFT_MARGIN, Map.m_MapHeight * (int)ENUM_Properities.PIXEL_SIZE + 20);
+        }
+        private void CreateTimeLabel(out Label label)
+        {
+            CreateLabel(out label);
+            lbl_Time.Location = new Point((int)ENUM_Properities.LEFT_MARGIN + 245, Map.m_MapHeight * (int)ENUM_Properities.PIXEL_SIZE + 20);
+            lbl_Time.Text = PassedTime.StartTime();
+        }
+        #endregion
         private void GameInitialization()
         {
             #region
             //Create Form elements
-            CreateLabel(out lbl_Score);
-            lbl_Score.Location = new Point((int)ENUM_Properities.LEFT_MARGIN, Map.m_MapHeight  * (int)ENUM_Properities.PIXEL_SIZE + 20);
-
-            CreateLabel(out lbl_Time);
-            lbl_Time.Location = new Point((int)ENUM_Properities.LEFT_MARGIN+245, Map.m_MapHeight * (int)ENUM_Properities.PIXEL_SIZE + 20);
-            lbl_Time.Text = "Time : 00:00:00";
-
+            CreateScoreLabel(out lbl_Score);
+            CreateTimeLabel(out lbl_Time);
+            
+            //Create timers
             TimerForGame = new Timer() { Interval = 60 };
             Clock = new Timer() { Interval = 1000 };
 
-
-            //Create new game and set form size properities
-            int FormWidth, FormHeight;
-            ArkanoidGame = new Game(ref lbl_Score, out FormWidth, out FormHeight);
-
-            
-            //Set Form size
-            this.Width = FormWidth;
-            this.Height = FormHeight; 
-            this.MaximumSize = new Size(this.Width, this.Height);
-            this.MinimumSize = new Size(this.Width, this.Height);
-
+            //Start game
+            ArkanoidGame = new Game(this, ref lbl_Score);
 
             //Add events
             Clock.Tick += new EventHandler(Tick);
@@ -81,7 +94,6 @@ namespace ArkanoidGame
             #endregion
         }
        
-
         internal void UpdateGameInfo_Win(object sender, EventArgs e)
         {
             #region
@@ -89,7 +101,7 @@ namespace ArkanoidGame
             {
                 TimerForGame.Tick -= UpdateGameInfo_Win;
 
-                MessageBox.Show("You're win ! c:");
+                MessageBox.Show("You have won ! c:");
 
                 TimerForGame.Tick += new EventHandler(UpdateGameInfo_Win);
             }
@@ -98,24 +110,16 @@ namespace ArkanoidGame
             #endregion
         }
 
-        //Find how much time is passed
         internal void Tick(object sender, EventArgs e)
         {
-            #region
-            ++PassedTime.seconds;
-
-            PassedTime.minutes += PassedTime.seconds / 60;
-            PassedTime.hours += PassedTime.minutes / 60;
-            PassedTime.minutes %= 60;
-            PassedTime.seconds %= 60;
-
-            lbl_Time.Text = String.Format("Time : {0:D2}:{1:D2}:{2:D2}", PassedTime.hours, PassedTime.minutes, PassedTime.seconds);
-            #endregion
+            lbl_Time.Text = PassedTime.Tick();
         }
+       
         internal void KeyInputCheck(object sender, KeyEventArgs e)
         {
             ArkanoidGame?.KeyInputCheck(sender, e);
         }
+        
         private void OnPaint(object sender, PaintEventArgs e)
         {
             ArkanoidGame?.OnPaint(sender, e);

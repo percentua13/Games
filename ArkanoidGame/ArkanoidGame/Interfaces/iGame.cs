@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace ArkanoidGame.Interfaces
 {
-    interface IGame
+    interface IGame    
     {
         public void OnPaint(object sender, PaintEventArgs e);
         public bool UpdateGameInfo(object sender, EventArgs e);

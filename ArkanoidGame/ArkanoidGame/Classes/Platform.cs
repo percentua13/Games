@@ -26,6 +26,7 @@ namespace ArkanoidGame
                 #endregion
             }
         }
+        
 
         #region fields
         public const int CountOfPlatforms = 21;

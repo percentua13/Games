@@ -10,20 +10,16 @@ namespace ArkanoidGame
         public int m_MaxPlatformY { set; get; } =  Map.m_MapHeight / 4 + 2;
         public int m_iBallX { set; get; } = 0;
         public int m_iBallY { set; get; } = 0;
-
         public int m_iDirectionX { set; get; } = 1;
         public int m_iDirectionY { set; get; } = 1;
-
         public Image m_ArkanoidBall { set; get; }
         #endregion
-        public Ball ()
+        public Ball()
         {
-            #region
             m_ArkanoidBall = new Bitmap(@"Pictures\ball_green.png");
-            #endregion
         }
 
-        public void SetInitProperities(Set set)
+        public void SetInitialProperities(Set set)
         {
             #region
             Random PositionOfBall = new Random();

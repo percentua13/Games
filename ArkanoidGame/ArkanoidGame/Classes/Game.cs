@@ -15,13 +15,16 @@ namespace ArkanoidGame
 
         private readonly Label lbl_Score;
         #endregion
-        public Game(ref Label lbl_Score, out int FormWidth, out int FormHeight)
+        public Game(ArkanoidForm form, ref Label lbl_Score) 
         {
             #region
+      
+            form.Width = (int)ENUM_Properities.LEFT_MARGIN + Map.m_MapWidth * (int)ENUM_Properities.PIXEL_SIZE + 19;
+            form.Height = Map.m_MapHeight * (int)ENUM_Properities.PIXEL_SIZE + (int)ENUM_Properities.BOTTOM_MARGIN;
 
-            //FORM
-            FormWidth = (int)ENUM_Properities.LEFT_MARGIN + Map.m_MapWidth * (int)ENUM_Properities.PIXEL_SIZE + 19;
-            FormHeight = Map.m_MapHeight * (int)ENUM_Properities.PIXEL_SIZE + (int)ENUM_Properities.BOTTOM_MARGIN;
+            form.MaximumSize = new Size(form.Width, form.Height);
+            form.MinimumSize = new Size(form.Width, form.Height);
+
 
             this.lbl_Score = lbl_Score;
             
@@ -42,32 +45,26 @@ namespace ArkanoidGame
         }
         private void DrawArea(Graphics g)
         {
-            #region
             g.DrawRectangle(Pens.Black, new Rectangle((int)ENUM_Properities.LEFT_MARGIN + 0, 0, Map.m_MapWidth * (int)ENUM_Properities.PIXEL_SIZE, Map.m_MapHeight * (int)ENUM_Properities.PIXEL_SIZE));
-            #endregion
         }
         private void DrawMap(Graphics g)
         {
-            #region
             map.DrawMap(g);
-            #endregion
         }
 
         public void OnPaint(object sender, PaintEventArgs e)
         {
-            #region
             DrawMap(e.Graphics);
             DrawArea(e.Graphics);
-            #endregion
         }
         public bool UpdateGameInfo(object sender, EventArgs e)
         {
             #region
             if (!map.IfMapCanBeApdate(ref Score))
             {
-                bool answ = map.CheckIfWin();
+                bool answer = map.CheckIfWin();
                 InitalizationParametersForNewGame();
-                return answ;
+                return answer;
             }
 
             lbl_Score.Text = $"Score : {Score}";
