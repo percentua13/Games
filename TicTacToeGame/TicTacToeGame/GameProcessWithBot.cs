@@ -75,14 +75,14 @@ namespace TicTacToeGame
             else
                 MessageBox.Show($"{Winner} player has won! c:");
         }
-       
+
+        
         #region Steps (After 6 => repeat 5-6 steps)
         void Step1()
         {
             m_Buttons[1, 1].Text = "X";
             m_Map[1, 1] = 1;
         }
-
         void Step2()
         {
             #region
@@ -120,7 +120,6 @@ namespace TicTacToeGame
             }
             #endregion
         }
-
         void Step3()
         {
             if (NeedsToCloseNotToLose(2, "X")) return;
@@ -256,7 +255,6 @@ namespace TicTacToeGame
                 }
             }
         }
-
         void Step4()
         {
             if (NeedsToCloseNotToLose(1, "O")) return;
@@ -275,18 +273,22 @@ namespace TicTacToeGame
             NextBotStep(2, "O", 1);
         }
         #endregion
+      
+        //Close third cell to win
         bool NeedsToCloseToWin(int GamerNumber, string Close)
         {
             return NextBotStep(GamerNumber, Close, 2);
         }
-
+        
+        //Close rival's third cell 
         bool NeedsToCloseNotToLose(int GamerNumber, string Close)
         {
             //int Gamer = GamerNumber == 1 ? 2 : 1;
 
             return NextBotStep(GamerNumber, Close, 2);
         }
-  
+
+        //Choose next step
         bool NextBotStep(int GamerNumber, string Close, int CountOfFilled)
         {
             int Gamer = Close == "X" ? 1 : 2;
@@ -325,14 +327,14 @@ namespace TicTacToeGame
 
             #region 1 0
             if (m_Map[1, 0] == 0)
-                 if (CheckRow(1, GamerNumber) == CountOfFilled || CheckColumn(0, GamerNumber) == CountOfFilled)
-                 {
+                if (CheckRow(1, GamerNumber) == CountOfFilled || CheckColumn(0, GamerNumber) == CountOfFilled)
+                {
                     m_Map[1, 0] = Gamer;
                     m_Buttons[1, 0].Text = Close;
                     return true;
-                 }
+                }
             #endregion
-            
+
             #region 1 1
             if (m_Map[1, 1] == 0)
                 if (CheckRow(1, GamerNumber) == CountOfFilled || CheckColumn(1, GamerNumber) == CountOfFilled ||
@@ -399,7 +401,6 @@ namespace TicTacToeGame
             }
             return Count;
         }
-
         int CheckColumn(int j, int Value)
         {
             int Count = 0;
@@ -410,7 +411,6 @@ namespace TicTacToeGame
             }
             return Count;
         }
-
         int CheckMainDiagonal(int Value)
         {
             int Count = 0;
@@ -424,7 +424,6 @@ namespace TicTacToeGame
 
             return Count;
         }
-
         int CheckSecondDiagonal(int Value)
         {
             int Count = 0;

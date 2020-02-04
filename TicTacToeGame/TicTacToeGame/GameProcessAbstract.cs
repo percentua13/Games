@@ -67,6 +67,7 @@ namespace TicTacToeGame
             }
         }
 
+        //When game is finish
         protected void BlockAllCells()
         {
             for (int i = 0; i < m_MapSize; ++i)

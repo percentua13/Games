@@ -14,7 +14,7 @@ namespace TicTacToeGame
     {
         public TicTacToe()
         {
-            InitializeComponent();
+           InitializeComponent();
 
            Game game = new Game();
 

@@ -25,25 +25,25 @@ namespace TicTacToeGame
             form.Controls.Add(menu);
             form.Controls.Add(panel);
 
-
             SetPanelProperities(panel);
             SetMenuProperities(menu);
+
 
             panel.Location = new Point(0, menu.Height);
 
             game.StartNewGameProcess(panel);
 
-
             form.Size = new Size(panel.Width, panel.Height + menu.Height - 1);
             form.MinimumSize = form.MaximumSize = form.Size;
         }
+
+        #region Set properities
         private void SetPanelProperities(Panel panel)
         {
             panel.Size = new Size(GameProcessAbstract.m_MapSize * GameProcessAbstract.m_CellSize + 16, GameProcessAbstract.m_MapSize * GameProcessAbstract.m_CellSize + 40);
             panel.MinimumSize = panel.MaximumSize = panel.Size;
             panel.Location = new Point(0, 25);
         }
-
         private void SetMenuProperities(MenuStrip menu)
         {
             menu.Size = new Size(GameProcessAbstract.m_MapSize * GameProcessAbstract.m_CellSize + 16, 25);
@@ -66,18 +66,19 @@ namespace TicTacToeGame
             menu.BackColor = Color.White;
             menu.AutoSize = true;
         }
+        #endregion
 
+        #region ClickEvents
         private void OnMenuClickSimpleGame(object sender, EventArgs e)
         {
             game = new GameProcessSimple();
             StartNewGame(form);
         }
-
         private void OnMenuClickGameWithBot(object sender, EventArgs e)
         {
             game = new GameProcessWithBot();
             StartNewGame(form);
         }
-
+        #endregion
     }
 }
