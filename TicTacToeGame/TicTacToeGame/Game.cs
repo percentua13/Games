@@ -59,21 +59,21 @@ namespace TicTacToeGame
             menu.Items.Add(NewGameItem);
             menu.Items.Add(NewGameBotItem);
 
-            NewGameItem.Click += OnMenuClick;
-            NewGameBotItem.Click += OnMenuClick2;
+            NewGameItem.Click += OnMenuClickSimpleGame;
+            NewGameBotItem.Click += OnMenuClickGameWithBot;
 
             menu.Location = new Point(0, 0);
             menu.BackColor = Color.White;
             menu.AutoSize = true;
         }
 
-        private void OnMenuClick(object sender, EventArgs e)
+        private void OnMenuClickSimpleGame(object sender, EventArgs e)
         {
             game = new GameProcessSimple();
             StartNewGame(form);
         }
 
-        private void OnMenuClick2(object sender, EventArgs e)
+        private void OnMenuClickGameWithBot(object sender, EventArgs e)
         {
             game = new GameProcessWithBot();
             StartNewGame(form);

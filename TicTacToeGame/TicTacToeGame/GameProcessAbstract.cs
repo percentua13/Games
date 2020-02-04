@@ -41,7 +41,7 @@ namespace TicTacToeGame
         {
             button.Size = new Size(m_CellSize, m_CellSize);
 
-            button.FlatAppearance.BorderSize = 1;
+            button.FlatAppearance.BorderSize = 2;
             button.FlatStyle = FlatStyle.Flat;
 
             button.BackColor = Color.White;
